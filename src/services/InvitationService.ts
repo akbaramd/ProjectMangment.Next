@@ -20,7 +20,7 @@ export async function apiGetInvitationDetails(invitationId: string) {
 }
 
 export async function apiSendInvitation(data: SendInvitationRequest) {
-    return ApiService.fetchDataWithAxios({
+    return ApiService.fetchAuthorizedDataWithAxios({
         url: endpointConfig.sendInvitation,
         method: 'post',
         data,
@@ -42,7 +42,7 @@ export async function apiRejectInvitation(invitationId: string) {
 }
 
 export async function apiCancelInvitation(invitationId: string) {
-    return ApiService.fetchDataWithAxios({
+    return ApiService.fetchAuthorizedDataWithAxios({
         url: endpointConfig.cancelInvitation(invitationId),
         method: 'post',
     });
