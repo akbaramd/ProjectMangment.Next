@@ -23,7 +23,6 @@ export type Route = {
     component: LazyExoticComponent<<T extends Meta>(props: T) => JSX.Element>
     authority: string[]
     meta?: Meta
-    tenantAccess?: TenantMemberRole[]
 }
 
 export type Routes = Route[]

@@ -40,7 +40,7 @@ const initialState: AuthState = {
         fullName: '',
         id: '',
         phoneNumber: '',
-        authority:[],
+        permissions:[],
         avatar:''
     },
 }

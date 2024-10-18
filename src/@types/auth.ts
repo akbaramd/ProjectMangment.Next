@@ -47,8 +47,11 @@ export type User = {
     phoneNumber?	: string | null;
     fullName?	: string | null;
     email?: string | null;
-    authority?: string[] | null;
+    permissions: string[] ;
     avatar?: string | null;
+    roles?: string[] | null;
+
+
 }
 
 export type Token = {

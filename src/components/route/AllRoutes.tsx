@@ -61,19 +61,15 @@ const AllRoutes = (props: AllRoutesProps) => {
                             element={<Navigate replace to={authenticatedEntryPath} />}
                         />
                         {protectedRoutes.map((route, index) => {
-                            const hasTenantAccess = route.tenantAccess
-                                ? tenant?.currentUserRole != null && route.tenantAccess.includes(tenant.currentUserRole)
-                                : true; // If no tenantAccess defined, allow access
                             return (
                                 <Route
                                     key={route.key + index}
                                     path={route.path}
                                     element={
                                         <AuthorityGuard
-                                            userAuthority={user.authority}
+                                            userAuthority={user.permissions}
                                             authority={route.authority}
                                         >
-                                            {hasTenantAccess ? (
                                                 <PageContainer {...props} {...route.meta}>
                                                     <AppRoute
                                                         routeKey={route.key}
@@ -81,9 +77,6 @@ const AllRoutes = (props: AllRoutesProps) => {
                                                         {...route.meta}
                                                     />
                                                 </PageContainer>
-                                            ) : (
-                                                <Navigate replace to="/no-access" />
-                                            )}
                                         </AuthorityGuard>
                                     }
                                 />

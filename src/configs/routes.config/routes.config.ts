@@ -11,7 +11,7 @@ export const publicRoutes: Routes = [{
     authority: [],
 },...authRoute]
 
-export const protectedRoutes: Routes = [
+export const    protectedRoutes: Routes = [
     {
         key: 'home',
         path: '/home',
@@ -23,15 +23,13 @@ export const protectedRoutes: Routes = [
         key: 'invitations',
         path: '/invitations',
         component: lazy(() => import('@/views/tenant/invitations/InvitationPage')),
-        authority: [],
-        tenantAccess:[TenantMemberRole.Manager,TenantMemberRole.Owner]
+        authority: ["invitation:read"],
     },
     {
         key: 'members',
         path: '/members',
         component: lazy(() => import('@/views/tenant/members/MembersPage')),
-        authority: [],
-        tenantAccess:[TenantMemberRole.Manager,TenantMemberRole.Owner]
+        authority: ["tenant:read"],
 
     },
 

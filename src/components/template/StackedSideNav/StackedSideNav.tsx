@@ -11,12 +11,12 @@ import useResponsive from '@/utils/hooks/useResponsive'
 import { useThemeStore } from '@/store/themeStore'
 import { useRouteKeyStore } from '@/store/routeKeyStore'
 import { useSessionUser } from '@/store/authStore'
-import navigationConfig, { navigationConfigByRole } from '@/configs/navigation.config'
 import isEmpty from 'lodash/isEmpty'
 import useTranslation from '@/utils/hooks/useTranslation'
 import type { TraslationFn } from '@/@types/common'
 import { useTenant } from '@/tenant/TenantContext'
 import { TenantMemberRole } from '@/@types/tenant'
+import navigationConfig from '@/configs/navigation.config'
 
 const stackedSideNavDefaultStyle = {
     width: SPLITTED_SIDE_NAV_MINI_WIDTH,
@@ -38,7 +38,7 @@ const StackedSideNav = ({
 
     const currentRouteKey = useRouteKeyStore((state) => state.currentRouteKey)
 
-    const userAuthority = useSessionUser((state) => state.user.authority)
+    const userAuthority = useSessionUser((state) => state.user.permissions)
 
     const { larger } = useResponsive()
 
@@ -87,7 +87,7 @@ const StackedSideNav = ({
                         activeKeys={activeKeys}
                         mode={mode}
                         direction={direction}
-                        navigationTree={navigationConfigByRole(tenant?.currentUserRole ?? TenantMemberRole.Guest)}
+                        navigationTree={navigationConfig}
                         userAuthority={userAuthority || []}
                         selectedMenu={selectedMenu}
                         t={t as TraslationFn}

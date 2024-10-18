@@ -25,7 +25,6 @@ export interface NavigationTree {
     authority: string[]
     subMenu: NavigationTree[]
     description?: string
-    tenantAccess?: TenantMemberRole[]
     meta?: {
         horizontalMenu?: HorizontalMenuMeta
         description?: {
