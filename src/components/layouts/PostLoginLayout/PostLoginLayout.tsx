@@ -1,4 +1,4 @@
-import { useMemo, lazy } from 'react'
+import React, { useMemo, lazy } from 'react'
 import {
     LAYOUT_COLLAPSIBLE_SIDE,
     LAYOUT_STACKED_SIDE,
@@ -10,6 +10,7 @@ import {
 import type { CommonProps } from '@/@types/common'
 import type { LazyExoticComponent } from 'react'
 import type { LayoutType } from '@/@types/theme'
+import { Outlet } from 'react-router-dom'
 
 type Layouts = Record<
     string,
@@ -31,7 +32,7 @@ const layouts: Layouts = {
     [LAYOUT_BLANK]: lazy(() => import('./components/Blank')),
 }
 
-const PostLoginLayout = ({ layoutType, children }: PostLoginLayoutProps) => {
+const PostLoginLayout = ({ layoutType }: PostLoginLayoutProps) => {
     const AppLayout = useMemo(() => {
         if (!layouts[layoutType]) {
             return layouts[Object.keys(layouts)[0]]
@@ -40,7 +41,7 @@ const PostLoginLayout = ({ layoutType, children }: PostLoginLayoutProps) => {
         return layouts[layoutType]
     }, [layoutType])
 
-    return <AppLayout>{children}</AppLayout>
+    return <AppLayout>  <Outlet /></AppLayout>
 }
 
 export default PostLoginLayout

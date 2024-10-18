@@ -7,7 +7,7 @@ import PostLoginLayout from './PostLoginLayout'
 import PreLoginLayout from './PreLoginLayout'
 
 const Layout = ({ children }: CommonProps) => {
-    const layoutType = useThemeStore((state) => state.layout.type)
+
 
     const { authenticated } = useAuth()
 
@@ -19,13 +19,7 @@ const Layout = ({ children }: CommonProps) => {
                 </div>
             }
         >
-            {authenticated ? (
-                <PostLoginLayout layoutType={layoutType}>
-                    {children}
-                </PostLoginLayout>
-            ) : (
-                <PreLoginLayout>{children}</PreLoginLayout>
-            )}
+            {children}
         </Suspense>
     )
 }

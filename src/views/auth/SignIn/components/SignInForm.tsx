@@ -44,7 +44,7 @@ const SignInForm = (props: SignInFormProps) => {
     } = useForm<SignInFormSchema>({
         defaultValues: {
             phoneNumber: '09371770774',
-            password: 'Password@123!',
+            password: 'Password123!',
         },
         resolver: zodResolver(validationSchema),
     })

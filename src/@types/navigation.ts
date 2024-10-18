@@ -1,3 +1,5 @@
+import { TenantMemberRole } from '@/@types/tenant'
+
 export type HorizontalMenuMeta =
     | {
           layout: 'default'
@@ -23,6 +25,7 @@ export interface NavigationTree {
     authority: string[]
     subMenu: NavigationTree[]
     description?: string
+    tenantAccess?: TenantMemberRole[]
     meta?: {
         horizontalMenu?: HorizontalMenuMeta
         description?: {

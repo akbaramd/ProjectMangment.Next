@@ -6,23 +6,32 @@ import type {
     ForgotPassword,
     ResetPassword,
     SignInResponse,
-    SignUpResponse,
+    SignUpResponse, User
 } from '@/@types/auth'
 
 export async function apiSignIn(data: SignInCredential) {
     return ApiService.fetchDataWithAxios<SignInResponse>({
-        url: endpointConfig.signIn,
+        url: endpointConfig.authSignIn,
         method: 'post',
         data,
     })
 }
 
+// Sign Up API
 export async function apiSignUp(data: SignUpCredential) {
     return ApiService.fetchDataWithAxios<SignUpResponse>({
-        url: endpointConfig.signUp,
+        url: endpointConfig.authSignUp,
         method: 'post',
         data,
-    })
+    });
+}
+
+// Get User Profile
+export async function apiGetUserProfile():Promise<User> {
+    return ApiService.fetchAuthorizedDataWithAxios({
+        url: endpointConfig.authProfile,
+        method: 'get',
+    });
 }
 
 export async function apiSignOut() {

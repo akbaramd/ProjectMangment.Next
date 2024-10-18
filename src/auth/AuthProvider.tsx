@@ -1,8 +1,8 @@
-import { useRef, useImperativeHandle, forwardRef } from 'react'
+import { useRef, useImperativeHandle, forwardRef, useEffect } from 'react'
 import AuthContext from './AuthContext'
 import appConfig from '@/configs/app.config'
 import { useSessionUser, useToken } from '@/store/authStore'
-import { apiSignIn, apiSignOut, apiSignUp } from '@/services/AuthService'
+import { apiSignIn, apiSignOut, apiSignUp, apiGetUserProfile } from '@/services/AuthService' // Import the profile fetching service
 import { REDIRECT_URL_KEY } from '@/constants/app.constant'
 import { useNavigate } from 'react-router-dom'
 import type {
@@ -10,7 +10,6 @@ import type {
     SignUpCredential,
     AuthResult,
     OauthSignInCallbackPayload,
-    User,
     Token,
 } from '@/@types/auth'
 import type { ReactNode } from 'react'
@@ -27,11 +26,9 @@ const IsolatedNavigator = forwardRef<IsolatedNavigatorRef>((_, ref) => {
 
     useImperativeHandle(
         ref,
-        () => {
-            return {
-                navigate,
-            }
-        },
+        () => ({
+            navigate,
+        }),
         [navigate],
     )
 
@@ -61,16 +58,23 @@ function AuthProvider({ children }: AuthProviderProps) {
         )
     }
 
-    const handleSignIn = (tokens: Token, userId?: string) => {
+    // Fetch the user's profile after login or token validation
+    const fetchUserProfile = async () => {
+        try {
+            const profile = await apiGetUserProfile() // Fetch the profile from API
+            setUser(profile) // Set user profile in store/context
+        } catch (error) {
+            console.error('Failed to fetch user profile', error)
+            setUser({}) // Clear user data in case of failure
+        }
+    }
+
+    const handleSignIn = async (tokens: Token, userId?: string) => {
         setToken(tokens.accessToken)
         setSessionSignedIn(true)
 
-        if (user) {
-            setUser({
-                userId: userId,
-                ...user
-            })
-        }
+        // Fetch user profile after successful sign-in
+        await fetchUserProfile()
     }
 
     const handleSignOut = () => {
@@ -83,7 +87,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         try {
             const resp = await apiSignIn(values)
             if (resp) {
-                handleSignIn({ accessToken: resp.accessToken })
+                await handleSignIn({ accessToken: resp.accessToken })
                 redirect()
                 return {
                     status: 'success',
@@ -94,7 +98,6 @@ function AuthProvider({ children }: AuthProviderProps) {
                 status: 'failed',
                 message: 'Unable to sign in',
             }
-            // eslint-disable-next-line  @typescript-eslint/no-explicit-any
         } catch (errors: any) {
             return {
                 status: 'failed',
@@ -107,7 +110,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         try {
             const resp = await apiSignUp(values)
             if (resp) {
-                handleSignIn({ accessToken: resp.accessToken }, resp.userId)
+                await handleSignIn({ accessToken: resp.accessToken }, resp.userId)
                 redirect()
                 return {
                     status: 'success',
@@ -118,7 +121,6 @@ function AuthProvider({ children }: AuthProviderProps) {
                 status: 'failed',
                 message: 'Unable to sign up',
             }
-            // eslint-disable-next-line  @typescript-eslint/no-explicit-any
         } catch (errors: any) {
             return {
                 status: 'failed',
@@ -135,6 +137,7 @@ function AuthProvider({ children }: AuthProviderProps) {
             navigatorRef.current?.navigate(appConfig.unAuthenticatedEntryPath)
         }
     }
+
     const oAuthSignIn = (
         callback: (payload: OauthSignInCallbackPayload) => void,
     ) => {
@@ -143,6 +146,13 @@ function AuthProvider({ children }: AuthProviderProps) {
             redirect,
         })
     }
+
+    // When component mounts, fetch user profile if token exists
+    useEffect(() => {
+        if (token) {
+            fetchUserProfile() // Fetch profile when token is present
+        }
+    }, [token])
 
     return (
         <AuthContext.Provider

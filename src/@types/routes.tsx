@@ -1,3 +1,4 @@
+import { TenantMemberRole } from './tenant'
 import { LayoutType } from './theme'
 import type { LazyExoticComponent, ReactNode } from 'react'
 
@@ -22,6 +23,7 @@ export type Route = {
     component: LazyExoticComponent<<T extends Meta>(props: T) => JSX.Element>
     authority: string[]
     meta?: Meta
+    tenantAccess?: TenantMemberRole[]
 }
 
 export type Routes = Route[]

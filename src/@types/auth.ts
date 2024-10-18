@@ -12,10 +12,12 @@ export type SignInResponse = {
 export type SignUpResponse = SignInResponse
 
 export type SignUpCredential = {
-    userName: string
-    email: string
-    password: string
+    fullName?: string | null;
+    email?: string | null;
+    phoneNumber?: string | null;
+    password?: string | null;
 }
+
 
 export type ForgotPassword = {
     email: string
@@ -32,12 +34,21 @@ export type AuthResult = Promise<{
     message: string
 }>
 
+export interface UserDto {
+    id: string;
+    phoneNumber	: string;
+    fullName	: string;
+    email: string;
+    // Add more fields as needed
+}
+
 export type User = {
-    userId?: string | null
-    avatar?: string | null
-    userName?: string | null
-    email?: string | null
-    authority?: string[]
+    id?: string | null;
+    phoneNumber?	: string | null;
+    fullName?	: string | null;
+    email?: string | null;
+    authority?: string[] | null;
+    avatar?: string | null;
 }
 
 export type Token = {

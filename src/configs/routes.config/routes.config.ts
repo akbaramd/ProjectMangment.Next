@@ -2,8 +2,14 @@ import { lazy } from 'react'
 import authRoute from './authRoute'
 import othersRoute from './othersRoute'
 import type { Routes } from '@/@types/routes'
+import { TenantMemberRole } from '@/@types/tenant'
 
-export const publicRoutes: Routes = [...authRoute]
+export const publicRoutes: Routes = [{
+    key: 'invitations-detail',
+    path: '/invitations/detail/:id',
+    component: lazy(() => import('@/views/tenant/invitations/Details/InvitationDetailPage')),
+    authority: [],
+},...authRoute]
 
 export const protectedRoutes: Routes = [
     {
@@ -16,8 +22,17 @@ export const protectedRoutes: Routes = [
     {
         key: 'invitations',
         path: '/invitations',
-        component: lazy(() => import('@/views/invitations/InvitationPage')),
+        component: lazy(() => import('@/views/tenant/invitations/InvitationPage')),
         authority: [],
+        tenantAccess:[TenantMemberRole.Manager,TenantMemberRole.Owner]
+    },
+    {
+        key: 'members',
+        path: '/members',
+        component: lazy(() => import('@/views/tenant/members/MembersPage')),
+        authority: [],
+        tenantAccess:[TenantMemberRole.Manager,TenantMemberRole.Owner]
+
     },
 
       /** Example purpose only, please remove */
@@ -62,6 +77,7 @@ export const protectedRoutes: Routes = [
             import('@/views/demo/GroupCollapseMenuItemView2')
         ),
         authority: [],
+
     },
     ...othersRoute,
 ]

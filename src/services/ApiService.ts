@@ -78,7 +78,6 @@ function getAccessToken(): string | null | Promise<string | null> {
 
 function getSubdomain(hostname: string): string | null {
   const parts = hostname.split('.');
-  console.log(parts);
 
   if (parts.length === 1) {
     // Hostname has no dots, e.g., 'localhost'

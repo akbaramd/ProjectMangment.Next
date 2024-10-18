@@ -1,19 +1,27 @@
+import { Tenant } from '@/@types/tenant'
+
 export interface Invitation {
     id: string;
     phoneNumber: string;
     tenantId: string;
+    tenant: Tenant;
     createdAt: string; // ISO date string
-    isAccepted: boolean;
     acceptedAt?: string; // ISO date string or null
     expirationDate: string; // ISO date string
-    isCanceled: boolean;
     canceledAt?: string; // ISO date string or null
     // Add other fields as necessary
+    status : InvitationStatus
+}
+
+export enum InvitationStatus {
+    Pending = 0,
+    Accepted = 1,
+    Rejected = 2,
+    Cancel = 3
 }
 
 export interface InvitationDetails {
-    phoneNumber: string;
-    tenantId: string;
+    invitation: Invitation;
     userExists: boolean;
     // Add other fields as necessary
 }

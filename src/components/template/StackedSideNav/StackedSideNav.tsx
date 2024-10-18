@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import {
-    SPLITTED_SIDE_NAV_MINI_WIDTH,
-    STACKED_SIDE_NAV_SECONDARY_WIDTH,
     DIR_LTR,
     DIR_RTL,
+    SPLITTED_SIDE_NAV_MINI_WIDTH,
+    STACKED_SIDE_NAV_SECONDARY_WIDTH
 } from '@/constants/theme.constant'
 import StackedSideNavMini, { SelectedMenuItem } from './StackedSideNavMini'
 import StackedSideNavSecondary from './StackedSideNavSecondary'
@@ -11,10 +11,12 @@ import useResponsive from '@/utils/hooks/useResponsive'
 import { useThemeStore } from '@/store/themeStore'
 import { useRouteKeyStore } from '@/store/routeKeyStore'
 import { useSessionUser } from '@/store/authStore'
-import navigationConfig from '@/configs/navigation.config'
+import navigationConfig, { navigationConfigByRole } from '@/configs/navigation.config'
 import isEmpty from 'lodash/isEmpty'
 import useTranslation from '@/utils/hooks/useTranslation'
 import type { TraslationFn } from '@/@types/common'
+import { useTenant } from '@/tenant/TenantContext'
+import { TenantMemberRole } from '@/@types/tenant'
 
 const stackedSideNavDefaultStyle = {
     width: SPLITTED_SIDE_NAV_MINI_WIDTH,
@@ -26,6 +28,7 @@ const StackedSideNav = ({
     translationSetup?: boolean
 }) => {
     const { t } = useTranslation(!translationSetup)
+    const {tenant,refreshTenant} = useTenant();
 
     const [selectedMenu, setSelectedMenu] = useState<SelectedMenuItem>({})
     const [activeKeys, setActiveKeys] = useState<string[]>([])
@@ -84,7 +87,7 @@ const StackedSideNav = ({
                         activeKeys={activeKeys}
                         mode={mode}
                         direction={direction}
-                        navigationTree={navigationConfig}
+                        navigationTree={navigationConfigByRole(tenant?.currentUserRole ?? TenantMemberRole.Guest)}
                         userAuthority={userAuthority || []}
                         selectedMenu={selectedMenu}
                         t={t as TraslationFn}
