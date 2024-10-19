@@ -1,8 +1,7 @@
 export interface CreateProjectDto {
-    name: string;
-    description: string;
-    startDate: string;
-    tenantId: string;
+    name?: string;
+    description?: string;
+    startDate?: string;
 }
 
 export interface UpdateProjectDto {
@@ -19,6 +18,43 @@ export interface ProjectDto {
     endDate?: string;
 }
 
-export interface ProjectDetailsDto extends ProjectDto {
-    // Add any additional fields for project details
+export interface TaskDto {
+    id: string;
+    name: string;
+    description?: string;
+    order?: number;
+}
+
+export interface BoardColumnDto {
+    id: string;
+    name: string;
+    order: number;
+    tasks: TaskDto[];
+}
+
+export interface BoardDto {
+    id: string;
+    name: string;
+    columns: BoardColumnDto[];
+}
+
+export interface SprintDto {
+    id: string;
+    name: string;
+    startDate: string;
+    endDate?: string;
+    tasks: TaskDto[];
+}
+
+export interface ProjectDetailsDto {
+    project: {
+        id: string;
+        name: string;
+        description: string;
+        startDate: string;
+        endDate?: string;
+        tenantId: string;
+    };
+    sprints: SprintDto[];
+    boards: BoardDto[];
 }

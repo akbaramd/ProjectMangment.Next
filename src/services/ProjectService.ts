@@ -12,7 +12,7 @@ export async function apiGetProjectsForTenant(): Promise<ProjectDto[]> {
 }
 
 // Get project details by projectId
-export async function apiGetProjectDetails(projectId: string): Promise<ProjectDetailsDto> {
+export async function apiGetProjectDetails(projectId: string ): Promise<ProjectDetailsDto> {
     return ApiService.fetchAuthorizedDataWithAxios<ProjectDetailsDto>({
         url: endpointConfig.getProjectDetails(projectId),
         method: 'get',

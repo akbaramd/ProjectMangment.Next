@@ -32,6 +32,20 @@ export const    protectedRoutes: Routes = [
 
     },
     {
+        key: 'projects',
+        path: '/projects',
+        component: lazy(() => import('@/views/projects/ProjectsPage')),
+        authority: ["project:read"],
+
+    },
+    {
+        key: 'projectDetils',
+        path: '/projects/:id',
+        component: lazy(() => import('@/views/projects/ProjectDetails/ProjectDetails')),
+        authority: ["project:read"],
+
+    },
+    {
         key: 'roles',
         path: '/roles',
         component: lazy(() => import('@/views/tenant/roles/RolePage')),
