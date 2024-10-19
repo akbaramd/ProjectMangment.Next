@@ -13,11 +13,13 @@ interface SendInvitationDialogProps {
     onSuccess: () => void;
     onError: (message: string) => void;
 }
+
 const expirationOptions = [
-    { value: '1.00:00:00', label: '1 day' },
-    { value: '3.00:00:00', label: '3 days' },
-    { value: '7.00:00:00', label: '1 week' },
+    { value: '1.00:00:00', label: '۱ روز' },
+    { value: '3.00:00:00', label: '۳ روز' },
+    { value: '7.00:00:00', label: '۱ هفته' },
 ];
+
 const SendInvitationDialog: React.FC<SendInvitationDialogProps> = ({
                                                                        isOpen,
                                                                        onClose,
@@ -30,7 +32,7 @@ const SendInvitationDialog: React.FC<SendInvitationDialogProps> = ({
 
     const handleSendInvitation = async () => {
         if (!phoneNumber || !expirationDuration) {
-            onError('Phone number and expiration duration are required.');
+            onError('شماره تلفن و مدت انقضا الزامی است.');
             return;
         }
 
@@ -38,14 +40,14 @@ const SendInvitationDialog: React.FC<SendInvitationDialogProps> = ({
         try {
             await apiSendInvitation({ phoneNumber, expirationDuration });
             toast.push(
-                <Notification title="Success" type="success">
-                    Invitation sent successfully.
+                <Notification title="موفقیت" type="success">
+                    دعوت‌نامه با موفقیت ارسال شد.
                 </Notification>
             );
             onSuccess();
             onClose();
         } catch (error) {
-            onError('Failed to send invitation.');
+            onError('ارسال دعوت‌نامه ناموفق بود.');
         } finally {
             setSendingInvitation(false);
         }
@@ -53,19 +55,19 @@ const SendInvitationDialog: React.FC<SendInvitationDialogProps> = ({
 
     return (
         <Dialog isOpen={isOpen} onClose={onClose}>
-            <h5 className="mb-4">Send Invitation</h5>
+            <h5 className="mb-4">ارسال دعوت‌نامه</h5>
             <div className="mb-4">
-                <label className="block mb-1">Phone Number:</label>
+                <label className="block mb-1">شماره تلفن:</label>
                 <Input
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
-                    placeholder="Enter phone number"
+                    placeholder="شماره تلفن را وارد کنید"
                 />
             </div>
             <div className="mb-4">
-                <label className="block mb-1">Expiration Duration:</label>
+                <label className="block mb-1">مدت انقضا:</label>
                 <Select
-                    placeholder="Please Select"
+                    placeholder="لطفا انتخاب کنید"
                     options={expirationOptions}
                     value={expirationOptions.find((option) => option.value === expirationDuration)}
                     onChange={(option) => setExpirationDuration(option?.value ?? '')}
@@ -73,10 +75,10 @@ const SendInvitationDialog: React.FC<SendInvitationDialogProps> = ({
             </div>
             <div className="text-right mt-6">
                 <Button className="ltr:mr-2" variant="plain" onClick={onClose}>
-                    Cancel
+                    لغو
                 </Button>
                 <Button variant="solid" onClick={handleSendInvitation} disabled={sendingInvitation}>
-                    {sendingInvitation ? 'Sending...' : 'Send'}
+                    {sendingInvitation ? 'در حال ارسال...' : 'ارسال'}
                 </Button>
             </div>
         </Dialog>

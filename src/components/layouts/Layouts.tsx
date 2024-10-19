@@ -5,12 +5,15 @@ import { useAuth } from '@/auth'
 import { useThemeStore } from '@/store/themeStore'
 import PostLoginLayout from './PostLoginLayout'
 import PreLoginLayout from './PreLoginLayout'
+import useDirection from '@/utils/hooks/useDirection'
 
 const Layout = ({ children }: CommonProps) => {
 
 
     const { authenticated } = useAuth()
+    const [direction, setDirection] = useDirection()
 
+    setDirection('rtl')
     return (
         <Suspense
             fallback={

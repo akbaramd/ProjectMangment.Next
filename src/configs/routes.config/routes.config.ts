@@ -2,7 +2,6 @@ import { lazy } from 'react'
 import authRoute from './authRoute'
 import othersRoute from './othersRoute'
 import type { Routes } from '@/@types/routes'
-import { TenantMemberRole } from '@/@types/tenant'
 
 export const publicRoutes: Routes = [{
     key: 'invitations-detail',
@@ -30,6 +29,13 @@ export const    protectedRoutes: Routes = [
         path: '/members',
         component: lazy(() => import('@/views/tenant/members/MembersPage')),
         authority: ["tenant:read"],
+
+    },
+    {
+        key: 'roles',
+        path: '/roles',
+        component: lazy(() => import('@/views/tenant/roles/RolePage')),
+        authority: ["role:read"],
 
     },
 

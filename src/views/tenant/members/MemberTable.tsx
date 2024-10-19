@@ -28,7 +28,13 @@ const MemberTable = ({ columns, searchFilter, reload }: MemberTableProps) => {
                 setMembersList(response);
                 setFilteredMembers(response); // Initially, show all members
             } catch (err: any) {
-                setFetchError('Error fetching members');
+                if (err.response?.status === 403) {
+                    setFetchError('You do not have permission to view members.');
+                } else if (err.message === 'Network Error') {
+                    setFetchError('Network error. Please check your connection.');
+                } else {
+                    setFetchError('Error fetching members.');
+                }
             } finally {
                 setIsLoading(false);
             }
@@ -39,7 +45,7 @@ const MemberTable = ({ columns, searchFilter, reload }: MemberTableProps) => {
 
     useEffect(() => {
         // Apply client-side filtering based on searchFilter
-        const filtered = membersList.filter(member => {
+        const filtered = membersList.filter((member) => {
             const search = searchFilter.toString().toLowerCase();
             return (
                 member.user.phoneNumber.toLowerCase().includes(search) ||

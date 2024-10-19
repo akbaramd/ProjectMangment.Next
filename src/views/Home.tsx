@@ -5,9 +5,11 @@ import { TenantMemberStatus } from '@/@types/tenant'
 const Home = () => {
 
     var { tenant } = useTenant()
-
+   
+    
     return <Card >
         <div>
+            
             <h4 className="mb-1">{tenant?.name}</h4>
             <p>subdomain : {tenant?.subdomain}</p>
             <p>members : {tenant?.members?.length}</p>

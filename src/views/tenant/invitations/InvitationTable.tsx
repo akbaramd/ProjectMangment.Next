@@ -36,7 +36,7 @@ const InvitationTable = ({ columns, searchFilter, reload }: InvitationTableProps
             setInvitationsList(response.items);
             setTotalRecords(response.totalCount);
         } catch (err: any) {
-            setFetchError('Error fetching invitations');
+            setFetchError('خطا در دریافت دعوت‌نامه‌ها');
         } finally {
             setIsLoading(false);
         }
@@ -61,13 +61,12 @@ const InvitationTable = ({ columns, searchFilter, reload }: InvitationTableProps
         },
     });
 
-// Inside your component's render
     if (isLoading) {
         return (
             <Card className="flex justify-center items-center  text-center">
                 <div>
                     <Spinner className="mx-auto mb-4" size="30px" />
-                    <p className="font-medium">Loading data, please wait...</p>
+                    <p className="font-medium">در حال بارگذاری داده‌ها، لطفا صبر کنید...</p>
                 </div>
             </Card>
         );
@@ -75,7 +74,7 @@ const InvitationTable = ({ columns, searchFilter, reload }: InvitationTableProps
 
     if (fetchError) {
         return (
-            <Notification title="Error" type="danger">
+            <Notification title="خطا" type="danger">
                 {fetchError}
             </Notification>
         );
@@ -88,7 +87,7 @@ const InvitationTable = ({ columns, searchFilter, reload }: InvitationTableProps
                 content: (
                     <div className="flex items-center justify-between ">
                         <span>
-                            Page <strong>{currentPage + 1} of {table.getPageCount()}</strong>
+                            صفحه <strong>{currentPage + 1} از {table.getPageCount()}</strong>
                         </span>
                         <Pagination
                             pageSize={rowsPerPage}

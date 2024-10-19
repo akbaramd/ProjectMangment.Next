@@ -21,25 +21,25 @@ const CancelInvitationDialog: React.FC<CancelInvitationDialogProps> = ({
                                                                        }) => {
     const handleConfirm = async () => {
         if (!item) {
-            onError('Invalid invitation data.');
+            onError('اطلاعات دعوت‌نامه نامعتبر است.');
             return;
         }
 
         try {
             await apiCancelInvitation(item.id);
             toast.push(
-                <Notification title="Success" type="success">
-                    Invitation cancelled successfully.
+                <Notification title="موفقیت" type="success">
+                    دعوت‌نامه با موفقیت لغو شد.
                 </Notification>
             );
             onSuccess();
         } catch (error) {
             toast.push(
-                <Notification title="Error" type="danger">
-                    Failed to cancel invitation.
+                <Notification title="خطا" type="danger">
+                    لغو دعوت‌نامه با شکست مواجه شد.
                 </Notification>
             );
-            onError('Failed to cancel invitation.');
+            onError('لغو دعوت‌نامه با شکست مواجه شد.');
         }
     };
 
@@ -48,12 +48,12 @@ const CancelInvitationDialog: React.FC<CancelInvitationDialogProps> = ({
             isOpen={isOpen}
             onClose={onClose}
             confirmValue={item?.phoneNumber || ''}
-            title={"Confirm Cancellation"}
-            message="Please enter the phone number associated with this invitation to confirm cancellation."
-            placeholder="Enter phone number"
+            title={"تأیید لغو"}
+            message="لطفاً شماره تلفن مرتبط با این دعوت‌نامه را برای تأیید لغو وارد کنید."
+            placeholder="شماره تلفن را وارد کنید"
             onConfirm={handleConfirm}
             onCancel={onClose}
-            errorMessage="Phone number mismatch."
+            errorMessage="عدم تطابق شماره تلفن."
         />
     );
 };

@@ -7,11 +7,13 @@ import appConfig from './configs/app.config'
 import './locales'
 import { TenantProvider } from '@/tenant/TenantContext'
 
+
 if (appConfig.enableMock) {
     import('./mock')
 }
 
 function App() {
+   
     return (
         <Theme>
             <BrowserRouter>

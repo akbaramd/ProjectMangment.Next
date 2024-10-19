@@ -15,7 +15,6 @@ import isEmpty from 'lodash/isEmpty'
 import useTranslation from '@/utils/hooks/useTranslation'
 import type { TraslationFn } from '@/@types/common'
 import { useTenant } from '@/tenant/TenantContext'
-import { TenantMemberRole } from '@/@types/tenant'
 import navigationConfig from '@/configs/navigation.config'
 
 const stackedSideNavDefaultStyle = {

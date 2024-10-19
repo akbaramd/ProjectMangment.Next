@@ -1,4 +1,3 @@
-import { TenantMemberRole } from './tenant'
 import { LayoutType } from './theme'
 import type { LazyExoticComponent, ReactNode } from 'react'
 

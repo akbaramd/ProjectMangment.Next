@@ -1,10 +1,12 @@
 const endpointConfig = {
+    // Authentication endpoints
     authSignIn: '/auth/login',
     authSignUp: '/auth/register',
     authProfile: '/auth/profile',
     signOut: '/sign-out',
     forgotPassword: '/forgot-password',
     resetPassword: '/reset-password',
+    refreshToken: '/auth/refresh-token',
 
     // Invitations endpoints
     getInvitations: `/invitations`,
@@ -21,6 +23,20 @@ const endpointConfig = {
     getTenantMembers: `/tenants/members`, // Fetch all members of a tenant
     removeTenantMember: (memberId: string) => `/tenants/members/${memberId}`, // Remove tenant member
     updateTenantMemberRole: (memberId: string) => `/tenants/members/${memberId}/role`, // Update tenant member's role
+
+    // Role and Permission endpoints
+    getRoles: '/tenant-roles', // Fetch all roles for a tenant
+    createRole: '/tenant-roles', // Create a new role
+    updateRole: (roleId: string) => `/tenant-roles/${roleId}`, // Update a role
+    deleteRole: (roleId: string) => `/tenant-roles/${roleId}`, // Delete a role
+    getPermissions: '/tenant-roles/permissions', // Fetch all permission groups
+   
+
+    getProjects: '/projects',
+    getProjectDetails: (projectId: string) => `/projects/${projectId}`,
+    createProject: '/projects',
+    updateProject: (projectId: string) => `/projects/${projectId}`,
+    deleteProject: (projectId: string) => `/projects/${projectId}`,
 }
 
 export default endpointConfig;

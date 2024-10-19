@@ -6,28 +6,28 @@ import Button from '@/components/ui/Button';
 interface EnsureConfirmDialogProps {
     isOpen: boolean;
     onClose: () => void;
-    title: string; // Prop for the dialog title
+    title: string;
     confirmValue: string;
     message: string;
     placeholder: string;
     onConfirm: () => Promise<void>;
     onCancel: () => void;
     errorMessage?: string;
-    confirmButtonColor?: string; // Allow dynamic button color
+    confirmButtonColor?: string;
 }
 
 const EnsureConfirmDialog: React.FC<EnsureConfirmDialogProps> = ({
-                                                                     isOpen,
-                                                                     onClose,
-                                                                     title,
-                                                                     confirmValue,
-                                                                     message,
-                                                                     placeholder,
-                                                                     onConfirm,
-                                                                     onCancel,
-                                                                     errorMessage = 'Value mismatch.',
-                                                                     confirmButtonColor = 'green', // Default button color set to green
-                                                                 }) => {
+    isOpen,
+    onClose,
+    title,
+    confirmValue,
+    message,
+    placeholder,
+    onConfirm,
+    onCancel,
+    errorMessage = 'مقدار وارد شده اشتباه است.',
+    confirmButtonColor = 'green',
+}) => {
     const [inputValue, setInputValue] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -45,15 +45,14 @@ const EnsureConfirmDialog: React.FC<EnsureConfirmDialogProps> = ({
         setError(null);
         try {
             await onConfirm();
-            onClose(); // Close the dialog on success
+            onClose();
         } catch (err) {
-            setError('An error occurred.');
+            setError('خطایی رخ داده است.');
         } finally {
             setIsProcessing(false);
         }
     };
 
-    // Determine the color of the input based on the input state
     const inputClass = isEmpty
         ? 'focus:border-blue-500 focus:ring-blue-500'
         : isMatch
@@ -69,24 +68,24 @@ const EnsureConfirmDialog: React.FC<EnsureConfirmDialogProps> = ({
             </pre>
             <hr className={"mb-4"}/>
             <div className="mb-4">
-                <label className="block mb-2">Enter to Confirm:</label>
+                <label className="block mb-2">برای ادامه کلمه مورد نظر را وارد نمایید:</label>
                 <Input
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder={placeholder}
-                    className={inputClass} // Dynamically set input class
+                    className={inputClass}
                 />
                 {error && <div className="text-red-500 mt-2">{error}</div>}
             </div>
             <div className="text-right mt-6">
                 <Button className="ltr:mr-2" variant="plain" onClick={onCancel}>
-                    Cancel
+                    لغو
                 </Button>
                 <Button
                     onClick={handleConfirm}
                     disabled={isEmpty || isProcessing || !isMatch}
                 >
-                    {isProcessing ? 'Processing...' : 'Confirm'}
+                    {isProcessing ? 'در حال پردازش...' : 'تأیید'}
                 </Button>
             </div>
         </Dialog>

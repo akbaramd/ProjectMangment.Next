@@ -14,33 +14,33 @@ interface RemoveMemberDialogProps {
 }
 
 const RemoveMemberDialog: React.FC<RemoveMemberDialogProps> = ({
-                                                                   isOpen,
-                                                                   onClose,
-                                                                   item,
-                                                                   onSuccess,
-                                                                   onError,
-                                                               }) => {
+    isOpen,
+    onClose,
+    item,
+    onSuccess,
+    onError,
+}) => {
     const handleConfirm = async () => {
         if (!item) {
-            onError('Invalid member data.');
+            onError('اطلاعات عضو نامعتبر است.');
             return;
         }
 
         try {
             await apiRemoveTenantMember(item.userId);
             toast.push(
-                <Notification title="Success" type="success">
-                    Member removed successfully.
+                <Notification title="موفقیت" type="success">
+                    عضو با موفقیت حذف شد.
                 </Notification>
             );
             onSuccess();
         } catch (error) {
             toast.push(
-                <Notification title="Error" type="danger">
-                    Failed to remove member.
+                <Notification title="خطا" type="danger">
+                    حذف عضو با شکست مواجه شد.
                 </Notification>
             );
-            onError('Failed to remove member.');
+            onError('حذف عضو با شکست مواجه شد.');
         }
     };
 
@@ -49,12 +49,12 @@ const RemoveMemberDialog: React.FC<RemoveMemberDialogProps> = ({
             isOpen={isOpen}
             onClose={onClose}
             confirmValue={item?.user.fullName || ''}
-            title={"Confirm Member Removal"}
-            message="Please enter the full name of the member to confirm removal."
-            placeholder="Enter full name"
+            title={"تأیید حذف عضو"}
+            message="لطفاً برای تأیید حذف، نام کامل عضو را وارد کنید."
+            placeholder="نام کامل را وارد کنید"
             onConfirm={handleConfirm}
             onCancel={onClose}
-            errorMessage="Full name mismatch."
+            errorMessage="نام وارد شده نادرست است."
         />
     );
 };

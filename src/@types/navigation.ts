@@ -1,4 +1,3 @@
-import { TenantMemberRole } from '@/@types/tenant'
 
 export type HorizontalMenuMeta =
     | {

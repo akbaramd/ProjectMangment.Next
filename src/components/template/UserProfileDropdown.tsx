@@ -75,7 +75,7 @@ const _UserDropdown = () => {
                 <span className="text-xl">
                     <PiSignOutDuotone />
                 </span>
-                <span>Sign Out</span>
+                <span>خروج از سیستم</span>
             </Dropdown.Item>
         </Dropdown>
     )

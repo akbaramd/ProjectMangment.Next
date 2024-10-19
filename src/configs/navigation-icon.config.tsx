@@ -5,7 +5,8 @@ import {
     PiBookBookmarkDuotone,
     PiAcornDuotone,
     PiBagSimpleDuotone,
-    PiEnvelopeDuotone, PiMemberOfDuotone, PiUsersDuotone
+    PiEnvelopeDuotone, PiMemberOfDuotone, PiUsersDuotone,
+    PiLockDuotone
 } from 'react-icons/pi'
 import {
     SlEnvolopeLetter,
@@ -18,6 +19,7 @@ const navigationIcon: NavigationIcons = {
     singleMenu: <PiEnvelopeDuotone />,
     invitationMenu: <PiEnvelopeDuotone  />,
     membersMenu: <PiUsersDuotone  />,
+    rolesMenu: <PiLockDuotone  />,
     collapseMenu: <PiArrowsInDuotone />,
     groupSingleMenu: <PiBookOpenUserDuotone />,
     groupCollapseMenu: <PiBookBookmarkDuotone />,

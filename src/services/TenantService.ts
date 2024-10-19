@@ -1,6 +1,6 @@
 import ApiService from './ApiService';
 import endpointConfig from '@/configs/endpoint.config';
-import { Tenant, TenantMember, TenantMemberRole } from '@/@types/tenant';
+import { Tenant, TenantMember } from '@/@types/tenant';
 
 // Get tenant information (no pagination needed)
 export async function apiGetTenantInfo() {
@@ -27,7 +27,7 @@ export async function apiRemoveTenantMember(memberId: string) {
 }
 
 // Update a tenant member's role (Only Owner, Manager, Administrator)
-export async function apiUpdateTenantMemberRole(memberId: string, role: TenantMemberRole) {
+export async function apiUpdateTenantMemberRole(memberId: string, role: string) {
     return ApiService.fetchAuthorizedDataWithAxios({
         url: endpointConfig.updateTenantMemberRole(memberId),
         method: 'put',

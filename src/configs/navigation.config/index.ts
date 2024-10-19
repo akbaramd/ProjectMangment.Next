@@ -1,6 +1,5 @@
 import { NAV_ITEM_TYPE_COLLAPSE, NAV_ITEM_TYPE_ITEM } from '@/constants/navigation.constant'
 import type { NavigationTree } from '@/@types/navigation'
-import { TenantMemberRole } from '@/@types/tenant'
 
 
 
@@ -9,7 +8,7 @@ const navigationConfig: NavigationTree[] = [
     {
         key: 'home',
         path: '/home',
-        title: 'Home',
+        title: 'صفحه اصلی',
         translateKey: 'nav.home',
         icon: 'home',
         type: NAV_ITEM_TYPE_ITEM,
@@ -19,7 +18,7 @@ const navigationConfig: NavigationTree[] = [
     {
         key: 'collapseMenu',
         path: '',
-        title: 'Tenant Management',
+        title: 'مدیریت مجموعه',
         translateKey: 'nav.tenant',
         icon: 'collapseMenu',
         type: NAV_ITEM_TYPE_COLLAPSE,
@@ -28,7 +27,7 @@ const navigationConfig: NavigationTree[] = [
             {
                 key: 'invitations',
                 path: '/invitations',
-                title: 'Invitations',
+                title: 'دعوت نامه ها',
                 translateKey: 'nav.invitations',
                 icon: 'invitationMenu',
                 type: NAV_ITEM_TYPE_ITEM,
@@ -38,11 +37,21 @@ const navigationConfig: NavigationTree[] = [
             {
                 key: 'members',
                 path: '/members',
-                title: 'Members',
+                title: 'اعضا',
                 translateKey: 'nav.members',
                 icon: 'membersMenu',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: ["tenant:read"],
+                subMenu: [],
+            },
+            {
+                key: 'roles',
+                path: '/roles',
+                title: 'نقش های کاربری',
+                translateKey: 'nav.roles',
+                icon: 'rolesMenu',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: ["role:read"],
                 subMenu: [],
             },
         ],

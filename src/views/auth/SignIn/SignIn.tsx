@@ -27,9 +27,9 @@ export const SignInBase = ({
                 <Logo type="streamline" mode={mode} imgClass="mx-auto" logoWidth={60} />
             </div>
             <div className="mb-10">
-                <h2 className="mb-2">Welcome back!</h2>
+                <h2 className="mb-2">خوش آمدید!</h2>
                 <p className="font-semibold heading-text">
-                    Please enter your credentials to sign in!
+                    لطفاً برای ورود اطلاعات حساب خود را وارد کنید!
                 </p>
             </div>
             {message && (
@@ -40,23 +40,23 @@ export const SignInBase = ({
             <SignInForm
                 disableSubmit={disableSubmit}
                 setMessage={setMessage}
-                passwordHint={
-                    <div className="mb-7 mt-2">
-                        <ActionLink
-                            to={forgetPasswordUrl}
-                            className="font-semibold heading-text mt-2 underline"
-                            themeColor={false}
-                        >
-                            Forgot password
-                        </ActionLink>
-                    </div>
-                }
+                // passwordHint={
+                //     // <div className="mb-7 mt-2">
+                //     //     <ActionLink
+                //     //         to={forgetPasswordUrl}
+                //     //         className="font-semibold heading-text mt-2 underline"
+                //     //         themeColor={false}
+                //     //     >
+                //     //         فراموشی رمز عبور
+                //     //     </ActionLink>
+                //     // </div>
+                // }
             />
-            <div className="mt-8">
+            {/* <div className="mt-8">
                 <div className="flex items-center gap-2 mb-6">
                     <div className="border-t border-gray-200 dark:border-gray-800 flex-1 mt-[1px]" />
                     <p className="font-semibold heading-text">
-                        or countinue with
+                        یا ادامه دهید با
                     </p>
                     <div className="border-t border-gray-200 dark:border-gray-800 flex-1 mt-[1px]" />
                 </div>
@@ -64,19 +64,19 @@ export const SignInBase = ({
                     disableSubmit={disableSubmit}
                     setMessage={setMessage}
                 />
-            </div>
-            <div>
+            </div> */}
+            {/* <div>
                 <div className="mt-6 text-center">
-                    <span>{`Don't have an account yet?`} </span>
+                    <span>{`حساب کاربری ندارید؟`}</span>
                     <ActionLink
                         to={signUpUrl}
                         className="heading-text font-bold"
                         themeColor={false}
                     >
-                        Sign up
+                        ثبت نام
                     </ActionLink>
                 </div>
-            </div>
+            </div> */}
         </>
     )
 }

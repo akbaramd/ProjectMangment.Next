@@ -71,7 +71,7 @@ const SignInForm = (props: SignInFormProps) => {
         <div className={className}>
             <Form onSubmit={handleSubmit(onSignIn)}>
                 <FormItem
-                    label="Mobile Number"
+                    label="شماره همراه"
                     invalid={Boolean(errors.phoneNumber)}
                     errorMessage={errors.phoneNumber?.message}
                 >
@@ -81,7 +81,6 @@ const SignInForm = (props: SignInFormProps) => {
                         render={({ field }) => (
                             <Input
                                 type="number"
-                                placeholder="Mobile Number"
                                 autoComplete="off"
                                 {...field}
                             />
@@ -89,7 +88,7 @@ const SignInForm = (props: SignInFormProps) => {
                     />
                 </FormItem>
                 <FormItem
-                    label="Password"
+                    label="کلمه عبور"
                     invalid={Boolean(errors.password)}
                     errorMessage={errors.password?.message}
                     className={classNames(
@@ -118,7 +117,7 @@ const SignInForm = (props: SignInFormProps) => {
                     variant="solid"
                     type="submit"
                 >
-                    {isSubmitting ? 'Signing in...' : 'Sign In'}
+                    {isSubmitting ? 'در حال ورود...' : 'ورود ب سیستم'}
                 </Button>
             </Form>
         </div>

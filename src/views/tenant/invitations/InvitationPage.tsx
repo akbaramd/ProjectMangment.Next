@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import DebouncedInput from './DebouncedInput'
 import InvitationTable from './InvitationTable'
 import SendInvitationDialog from './SendInvitationDialog'
@@ -11,30 +11,30 @@ import { Invitation, InvitationStatus } from '@/@types/invitations'
 import { useNavigate } from 'react-router-dom'
 
 const InvitationsPage = () => {
-    const [searchFilter, setSearchFilter] = useState<string | number>(''); // Track search filter
+    const [searchFilter, setSearchFilter] = useState<string | number>(''); // پیگیری فیلتر جستجو
     const [isSendDialogOpen, setSendDialogOpen] = useState(false);
     const [isCancelDialogOpen, setCancelDialogOpen] = useState(false);
     const [invitationToBeCancelled, setInvitationToBeCancelled] = useState<Invitation | null>(null);
-    const [reload, setReload] = useState(false); // Track reload state for the table
+    const [reload, setReload] = useState(false); // پیگیری حالت بارگذاری مجدد برای جدول
     const navigate = useNavigate();
 
     const triggerTableReload = () => {
-        setReload((prev) => !prev); // Toggle reload to trigger table refresh
+        setReload((prev) => !prev); // تغییر حالت بارگذاری مجدد برای تازه‌سازی جدول
     };
 
     const handleSendSuccess = () => {
         toast.push(
-            <Notification title="Success" type="success">
-                Invitation sent successfully.
+            <Notification title="موفقیت" type="success">
+                دعوت‌نامه با موفقیت ارسال شد.
             </Notification>
         );
-        triggerTableReload(); // Reload the table after sending invitation
+        triggerTableReload(); // تازه‌سازی جدول پس از ارسال دعوت‌نامه
         setSendDialogOpen(false);
     };
 
     const handleSendError = (message: string) => {
         toast.push(
-            <Notification title="Error" type="danger">
+            <Notification title="خطا" type="danger">
                 {message}
             </Notification>
         );
@@ -42,54 +42,54 @@ const InvitationsPage = () => {
 
     const handleCancelSuccess = () => {
         toast.push(
-            <Notification title="Success" type="success">
-                Invitation cancelled successfully.
+            <Notification title="موفقیت" type="success">
+                دعوت‌نامه با موفقیت لغو شد.
             </Notification>
         );
-        triggerTableReload(); // Reload the table after canceling invitation
+        triggerTableReload(); // تازه‌سازی جدول پس از لغو دعوت‌نامه
         setCancelDialogOpen(false);
     };
 
     const handleCancelError = (message: string) => {
         toast.push(
-            <Notification title="Error" type="danger">
+            <Notification title="خطا" type="danger">
                 {message}
             </Notification>
         );
     };
 
-    // Define columns for the InvitationTable
+    // تعریف ستون‌ها برای InvitationTable
     const invitationColumns: ColumnDef<Invitation>[] = [
-        { header: 'Phone Number', accessorKey: 'phoneNumber' },
+        { header: 'شماره تلفن', accessorKey: 'phoneNumber' },
         {
-            header: 'Created At',
+            header: 'تاریخ ایجاد',
             accessorKey: 'createdAt',
             cell: ({ row }: { row: { original: Invitation } }) => {
                 return new Date(row.original.createdAt).toLocaleString();
             },
         },
         {
-            header: 'Expiration Date',
+            header: 'تاریخ انقضا',
             accessorKey: 'expirationDate',
             cell: ({ row }: { row: { original: Invitation } }) => {
                 return new Date(row.original.expirationDate).toLocaleString();
             },
         },
         {
-            header: 'Status',
+            header: 'وضعیت',
             accessorKey: 'status',
             cell: ({ row }: { row: { original: Invitation } }) => {
                 const { status } = row.original;
 
-                // Mapping status to label and background color
+                // نگاشت وضعیت به برچسب و رنگ پس‌زمینه
                 const statusMap = {
-                    [InvitationStatus.Pending]: { label: 'Pending', color: 'bg-yellow-100' },
-                    [InvitationStatus.Accepted]: { label: 'Accepted', color: 'bg-green-100' },
-                    [InvitationStatus.Rejected]: { label: 'Rejected', color: 'bg-red-100' },
-                    [InvitationStatus.Cancel]: { label: 'Cancel', color: 'bg-blue-100' },
+                    [InvitationStatus.Pending]: { label: 'در انتظار', color: 'bg-yellow-100' },
+                    [InvitationStatus.Accepted]: { label: 'پذیرفته شده', color: 'bg-green-100' },
+                    [InvitationStatus.Rejected]: { label: 'رد شده', color: 'bg-red-100' },
+                    [InvitationStatus.Cancel]: { label: 'لغو شده', color: 'bg-blue-100' },
                 };
 
-                const { label, color } = statusMap[status] || { label: 'Unknown', color: 'bg-gray-100' };
+                const { label, color } = statusMap[status] || { label: 'نامشخص', color: 'bg-gray-100' };
 
                 return (
                     <span className={`px-2 py-1 rounded ${color}`}>
@@ -99,11 +99,11 @@ const InvitationsPage = () => {
             },
         },
         {
-            header: 'Action',
+            header: 'عملیات',
             accessorKey: 'action',
             cell: ({ row }: { row: { original: Invitation } }) => {
-                const {  id,status } = row.original;
-                if (status==InvitationStatus.Pending) {
+                const { id, status } = row.original;
+                if (status == InvitationStatus.Pending) {
                     return (
                         <div className={"flex gap-2"}>
                             <Button
@@ -115,7 +115,7 @@ const InvitationsPage = () => {
                                 }}
                                 disabled={invitationToBeCancelled?.id === id}
                             >
-                                {invitationToBeCancelled?.id === id ? 'Canceling...' : 'Cancel'}
+                                {invitationToBeCancelled?.id === id ? 'در حال لغو...' : 'لغو'}
                             </Button>
                             <Button
                                 color="danger"
@@ -125,10 +125,9 @@ const InvitationsPage = () => {
                                 }}
                                 disabled={invitationToBeCancelled?.id === id}
                             >
-                                Link
+                                لینک
                             </Button>
                         </div>
-
                     );
                 }
 
@@ -143,18 +142,18 @@ const InvitationsPage = () => {
                 <DebouncedInput
                     className="border-gray-200 bg-white focus:bg-white"
                     value={searchFilter}
-                    onChange={(value) => setSearchFilter(value)} // Update search filter
-                    placeholder="Search invitations..."
+                    onChange={(value) => setSearchFilter(value)} // به‌روزرسانی فیلتر جستجو
+                    placeholder="جستجوی دعوت‌نامه‌ها..."
                 />
                 <Button variant="solid" onClick={() => setSendDialogOpen(true)}>
-                    Send Invitation
+                    ارسال دعوت‌نامه
                 </Button>
             </div>
 
             <InvitationTable
                 columns={invitationColumns}
                 searchFilter={searchFilter}
-                reload={reload} // Pass reload state to table
+                reload={reload} // انتقال حالت بارگذاری مجدد به جدول
             />
 
             <SendInvitationDialog

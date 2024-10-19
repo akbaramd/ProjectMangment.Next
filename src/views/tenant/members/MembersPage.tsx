@@ -5,27 +5,27 @@ import Notification from '@/components/ui/Notification';
 import toast from '@/components/ui/toast';
 import { ColumnDef } from '@tanstack/react-table';
 import { useNavigate } from 'react-router-dom';
-import { TenantMember, TenantMemberRole, TenantMemberStatus } from '@/@types/tenant';
+import { TenantMember, TenantMemberStatus } from '@/@types/tenant';
 import DebouncedInput from '@/views/tenant/invitations/DebouncedInput';
 import RemoveMemberDialog from './RemoveMemberDialog';
-import ModifyRoleDialog from '@/views/tenant/members/ModifyMemberDialog' // Import the new dialog
+import ModifyRoleDialog from '@/views/tenant/members/ModifyMemberDialog'; // Import the new dialog
 
 const MembersPage = () => {
-    const [searchFilter, setSearchFilter] = useState<string | number>(''); // Track search filter
-    const [reload, setReload] = useState(false); // Track reload state for the table
+    const [searchFilter, setSearchFilter] = useState<string | number>(''); // پیگیری فیلتر جستجو
+    const [reload, setReload] = useState(false); // پیگیری وضعیت رفرش جدول
     const [isRemoveDialogOpen, setRemoveDialogOpen] = useState(false);
     const [isModifyRoleDialogOpen, setModifyRoleDialogOpen] = useState(false);
-    const [memberToBeRemoved, setMemberToBeRemoved] = useState<TenantMember | null>(null); // Track the member to be removed
-    const [memberToModifyRole, setMemberToModifyRole] = useState<TenantMember | null>(null); // Track the member to modify role
+    const [memberToBeRemoved, setMemberToBeRemoved] = useState<TenantMember | null>(null); // پیگیری عضوی که قرار است حذف شود
+    const [memberToModifyRole, setMemberToModifyRole] = useState<TenantMember | null>(null); // پیگیری عضوی که قرار است نقش آن تغییر کند
     const navigate = useNavigate();
 
     const triggerTableReload = () => {
-        setReload((prev) => !prev); // Toggle reload to trigger table refresh
+        setReload((prev) => !prev); // تغییر وضعیت رفرش برای به‌روزرسانی جدول
     };
 
     const handleActionError = (message: string) => {
         toast.push(
-            <Notification title="Error" type="danger">
+            <Notification title="خطا" type="danger">
                 {message}
             </Notification>
         );
@@ -33,44 +33,44 @@ const MembersPage = () => {
 
     const handleRemoveSuccess = () => {
         toast.push(
-            <Notification title="Success" type="success">
-                Member removed successfully.
+            <Notification title="موفقیت" type="success">
+                عضو با موفقیت حذف شد.
             </Notification>
         );
-        triggerTableReload(); // Reload the table after removing the member
-        setRemoveDialogOpen(false); // Close the dialog
+        triggerTableReload(); // رفرش جدول بعد از حذف عضو
+        setRemoveDialogOpen(false); // بستن دیالوگ
     };
 
     const handleModifyRoleSuccess = () => {
         toast.push(
-            <Notification title="Success" type="success">
-                Member role updated successfully.
+            <Notification title="موفقیت" type="success">
+                نقش عضو با موفقیت به‌روزرسانی شد.
             </Notification>
         );
-        triggerTableReload(); // Reload the table after modifying the member role
-        setModifyRoleDialogOpen(false); // Close the dialog
+        triggerTableReload(); // رفرش جدول بعد از تغییر نقش عضو
+        setModifyRoleDialogOpen(false); // بستن دیالوگ
     };
 
-    // Define columns for the MemberTable
+    // تعریف ستون‌های جدول اعضا
     const memberColumns: ColumnDef<TenantMember>[] = [
-        { header: 'FullName', accessorKey: 'user.fullName' },
-        { header: 'Email', accessorKey: 'user.email' },
-        { header: 'Mobile', accessorKey: 'user.phoneNumber' },
+        { header: 'نام کامل', accessorKey: 'user.fullName' },
+        { header: 'ایمیل', accessorKey: 'user.email' },
+        { header: 'موبایل', accessorKey: 'user.phoneNumber' },
         {
-            header: 'Role',
-            accessorKey: 'memberRole',
+            header: 'نقش',
+            accessorKey: 'roles',
             cell: ({ row }: { row: { original: TenantMember } }) => {
-                const { memberRole } = row.original;
-                const name = TenantMemberRole[memberRole];
+                const { roles } = row.original;
+              
                 return (
                     <span className={`px-2 py-1 rounded bg-blue-100`}>
-                        {name}
+                        {roles.map(x => x.title).join(' | ')}
                     </span>
                 );
             },
         },
         {
-            header: 'Status',
+            header: 'وضعیت',
             accessorKey: 'memberStatus',
             cell: ({ row }: { row: { original: TenantMember } }) => {
                 const { memberStatus } = row.original;
@@ -83,40 +83,40 @@ const MembersPage = () => {
             },
         },
         {
-            header: 'Action',
+            header: 'عملیات',
             accessorKey: 'action',
             cell: ({ row }: { row: { original: TenantMember } }) => {
-                const { memberRole } = row.original;
+                const { roles } = row.original;
 
-                // Owner cannot be removed or modified
-                if (memberRole === TenantMemberRole.Owner) {
-                    return null;
+                // اطمینان از اینکه نقش 'Owner' قابل ویرایش نیست
+                if (roles.find(x => x.title === 'Owner') === undefined) {
+                    return (
+                        <div className="flex gap-2">
+                            <Button
+                                color="primary"
+                                size="sm"
+                                onClick={() => {
+                                    setMemberToModifyRole(row.original); // تنظیم عضو برای تغییر نقش
+                                    setModifyRoleDialogOpen(true); // باز کردن دیالوگ تغییر نقش
+                                }}
+                            >
+                                ویرایش
+                            </Button>
+                            <Button
+                                color="danger"
+                                size="sm"
+                                onClick={() => {
+                                    setMemberToBeRemoved(row.original); // تنظیم عضو برای حذف
+                                    setRemoveDialogOpen(true); // باز کردن دیالوگ حذف
+                                }}
+                            >
+                                حذف
+                            </Button>
+                        </div>
+                    );
+                } else {
+                    return <small>نقش مالک قابل ویرایش نیست</small>;
                 }
-
-                return (
-                    <div className="flex gap-2">
-                        <Button
-                            color="primary"
-                            size="sm"
-                            onClick={() => {
-                                setMemberToModifyRole(row.original); // Set the member to modify role
-                                setModifyRoleDialogOpen(true); // Open the modify role dialog
-                            }}
-                        >
-                            Modify
-                        </Button>
-                        <Button
-                            color="danger"
-                            size="sm"
-                            onClick={() => {
-                                setMemberToBeRemoved(row.original); // Set the member to be removed
-                                setRemoveDialogOpen(true); // Open the dialog
-                            }}
-                        >
-                            Remove
-                        </Button>
-                    </div>
-                );
             },
         },
     ];
@@ -127,16 +127,16 @@ const MembersPage = () => {
                 <DebouncedInput
                     className="border-gray-200 bg-white focus:bg-white"
                     value={searchFilter}
-                    onChange={(value) => setSearchFilter(value)} // Update search filter
-                    placeholder="Search members..."
+                    onChange={(value) => setSearchFilter(value)} // به‌روزرسانی فیلتر جستجو
+                    placeholder="جستجوی عضو..."
                 />
             </div>
 
             <MemberTable
                 columns={memberColumns}
                 searchFilter={searchFilter}
-                reload={reload} // Pass reload state to table
-            />
+                reload={reload} // ارسال وضعیت رفرش به جدول
+            />  
 
             <RemoveMemberDialog
                 isOpen={isRemoveDialogOpen}
