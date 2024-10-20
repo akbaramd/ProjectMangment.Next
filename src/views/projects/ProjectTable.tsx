@@ -42,8 +42,8 @@ const ProjectsTable = ({ columns, searchFilter, reload }: ProjectsTableProps) =>
         const filtered = projectsList.filter(project => {
             const search = searchFilter.toString().toLowerCase();
             return (
-                project.name.toLowerCase().includes(search) ||  // Filter by project name
-                project.description.toLowerCase().includes(search)  // Filter by project description
+                project.name?.toLowerCase().includes(search) ||  // Filter by project name
+                project.description?.toLowerCase().includes(search)  // Filter by project description
             );
         });
         setFilteredProjects(filtered);

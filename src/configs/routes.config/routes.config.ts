@@ -46,6 +46,27 @@ export const    protectedRoutes: Routes = [
 
     },
     {
+        key: 'projectScrums',
+        path: '/projects/:id/sprints',
+        component: lazy(() => import('@/views/projects/SprintList/SprintList')),
+        authority: ["project:read"],
+
+    },
+    {
+        key: 'projectBoards',
+        path: '/sprints/:id/boards',
+        component: lazy(() => import('@/views/projects/BoardList/SprintList')),
+        authority: ["project:read"],
+
+    },
+    {
+        key: 'ScrumBoards',
+        path: '/boards/:id',
+        component: lazy(() => import('@/views/projects/ScrumBoard/ScrumBoard')),
+        authority: ["project:read"],
+
+    },
+    {
         key: 'roles',
         path: '/roles',
         component: lazy(() => import('@/views/tenant/roles/RolePage')),

@@ -1,60 +1,55 @@
-export interface CreateProjectDto {
-    name?: string;
-    description?: string;
-    startDate?: string;
+export type CreateProjectDto= {
+    name?: string | null;
+    description?: string | null;
+    startDate?: string| null; // ISO date format
 }
 
-export interface UpdateProjectDto {
-    name?: string;
-    description?: string;
-    endDate?: string;
+export type UpdateProjectDto ={
+    name?: string | null;
+    description?: string | null;
+    endDate?: string | null; // ISO date format
 }
 
-export interface ProjectDto {
-    id: string;
-    name: string;
-    description: string;
-    startDate: string;
-    endDate?: string;
+export type ProjectDto= {
+    id: string; // UUID
+    name?: string | null;
+    description: string | null;
+    startDate: string; // ISO date format
+    endDate?: string | null; // ISO date format
+    tenantId: string; // UUID
 }
 
-export interface TaskDto {
-    id: string;
-    name: string;
-    description?: string;
-    order?: number;
-}
-
-export interface BoardColumnDto {
-    id: string;
-    name: string;
+export type TaskDto ={
+    id: string; // UUID
+    title: string | null;
+    description?: string | null;
+    status: number; // Matches TaskStatus in Swagger
     order: number;
-    tasks: TaskDto[];
 }
 
-export interface BoardDto {
-    id: string;
-    name: string;
-    columns: BoardColumnDto[];
+export type BoardColumnDto ={
+    id: string; // UUID
+    name: string | null;
+    order: number;
+    tasks: TaskDto[] | null;
 }
 
-export interface SprintDto {
-    id: string;
-    name: string;
-    startDate: string;
-    endDate?: string;
-    tasks: TaskDto[];
+export type BoardDto ={
+    id: string; // UUID
+    name: string | null;
+    columns: BoardColumnDto[] | null;
 }
 
-export interface ProjectDetailsDto {
-    project: {
-        id: string;
-        name: string;
-        description: string;
-        startDate: string;
-        endDate?: string;
-        tenantId: string;
-    };
-    sprints: SprintDto[];
-    boards: BoardDto[];
+export type SprintDto ={
+    id: string; // UUID
+    name: string | null;
+    startDate: string; // ISO date format
+    endDate: string; // ISO date format
+    tasks: TaskDto[] | null;
+}
+
+export type ProjectDetailsDto ={
+    project: ProjectDto;
+    sprints: SprintDto[] | null;
+    boards: BoardDto[] | null;
 }

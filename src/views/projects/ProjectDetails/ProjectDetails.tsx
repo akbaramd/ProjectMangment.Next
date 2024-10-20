@@ -85,7 +85,7 @@ const ProjectDetails = () => {
             
             {data && (
                 <>
-                    <ProjectDetailsHeader title={data.project.name} isContentEdit={isContentEdit} onEdit={handleEdit} selected={selectedNav} onChange={handleNavigationChange} />
+                    <ProjectDetailsHeader title={data.project.name ?? ''} isContentEdit={isContentEdit} onEdit={handleEdit} selected={selectedNav} onChange={handleNavigationChange} />
                    
                     <div className="mt-6 flex gap-12">
                         {larger.xl && (
@@ -104,9 +104,9 @@ const ProjectDetails = () => {
                             >
                                
                                 {selectedNav === 'settings' &&  <ProjectDetailsSetting
-                                        name={data.project.name}
-                                        description={data.project.description}
-                                        startDate={data.project.startDate}
+                                        name={data.project.name ?? ''}
+                                        description={data.project.description ?? ''}
+                                        startDate={data.project.startDate ?? ''}
                                         onUpdate={handleUpdate}
                                     />}
                            

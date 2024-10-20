@@ -37,6 +37,10 @@ const endpointConfig = {
     createProject: '/projects',
     updateProject: (projectId: string) => `/projects/${projectId}`,
     deleteProject: (projectId: string) => `/projects/${projectId}`,
+    getSprintsByProjectId: (projectId: string) => `/projects/${projectId}/sprints`,
+    getBoardsBySprintId: (sprintId: string) => `/projects/sprints/${sprintId}/boards`,
+    getTasksByBoardId: (boardId: string) => `/projects/boards/${boardId}/tasks`,
+    getBoardDetailsById: (boardId: string) => `/projects/boards/${boardId}/details`,
 }
 
 export default endpointConfig;
