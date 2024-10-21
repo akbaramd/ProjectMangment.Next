@@ -1,3 +1,5 @@
+import { TenantMember } from "./tenant";
+
 export type CreateProjectDto= {
     name?: string | null;
     description?: string | null;
@@ -17,6 +19,7 @@ export type ProjectDto= {
     startDate: string; // ISO date format
     endDate?: string | null; // ISO date format
     tenantId: string; // UUID
+    members: ProjectMemberDto[] | null;
 }
 
 export type ProjectDetailsDto= {
@@ -27,9 +30,14 @@ export type ProjectDetailsDto= {
     endDate?: string | null; // ISO date format
     tenantId: string; // UUID
     sprints: SprintDetailsDto[] | null;
+    members: ProjectMemberDto[] | null;
 }
 
-
+export type ProjectMemberDto= {
+    id: string; // UUID
+    member: TenantMember | null;
+    access: string | null;
+}
 
 export type TaskDto ={
     id: string; // UUID

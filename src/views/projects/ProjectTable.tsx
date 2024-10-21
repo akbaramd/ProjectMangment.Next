@@ -1,19 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Table, Card, Spinner, Pagination } from '@/components/ui'; // Import pagination component
-import { useReactTable, flexRender, getCoreRowModel, ColumnDef } from '@tanstack/react-table';
+import { Card, Spinner, Pagination } from '@/components/ui'; // Import pagination component
 import Notification from '@/components/ui/Notification';
 import { ProjectDto } from '@/@types/projects';  // Assume a ProjectDto type exists
 import { apiGetProjectsForTenant } from '@/services/ProjectService';
-
-const { Tr, Th, Td, THead, TBody, Sorter } = Table;
+import { TbStarFilled, TbStar, TbClipboardCheck } from 'react-icons/tb';
+import { UsersAvatarGroup } from '@/components/shared';
 
 interface ProjectsTableProps {
-    columns: ColumnDef<ProjectDto>[];  // Columns for the projects table
     searchFilter: string | number;  // Client-side search filter
     reload: boolean;  // Trigger data reload
+    handleToggleFavorite: (projectId: string, isFavorite: boolean) => void;
 }
 
-const ProjectsTable = ({ columns, searchFilter, reload }: ProjectsTableProps) => {
+const ProjectsTable = ({ searchFilter, reload, handleToggleFavorite }: ProjectsTableProps) => {
     const [projectsList, setProjectsList] = useState<ProjectDto[]>([]);
     const [totalCount, setTotalCount] = useState(0);
     const [page, setPage] = useState(1);
@@ -39,12 +38,6 @@ const ProjectsTable = ({ columns, searchFilter, reload }: ProjectsTableProps) =>
         fetchProjectsList();
     }, [reload, searchFilter, page]);  // Reload data when the reload, search filter, or page changes
 
-    const table = useReactTable({
-        data: projectsList,  // Use the fetched projects for table data
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-    });
-
     if (isLoading) {
         return (
             <Card className="flex justify-center items-center text-center">
@@ -65,47 +58,56 @@ const ProjectsTable = ({ columns, searchFilter, reload }: ProjectsTableProps) =>
     }
 
     return (
-        <Card className="overflow-hidden">
-            <Table className='border'>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {header.isPlaceholder ? null : (
-                                        <div
-                                            className={header.column.getCanSort() ? 'cursor-pointer' : ''}
-                                            onClick={header.column.getToggleSortingHandler()}
-                                        >
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
-                                            <Sorter sort={header.column.getIsSorted()} />
+        <div>
+            <div className="mt-8">
+                <h5 className="mb-3">Other Projects</h5>
+                <div className="flex flex-col gap-4">
+                    {projectsList
+                        .map((project) => (
+                            <Card key={project.id}>
+                                <div className="grid gap-x-4 grid-cols-12">
+                                    <div className="my-1 sm:my-0 col-span-12 sm:col-span-2 md:col-span-3 lg:col-span-3 md:flex md:items-center">
+                                        <div className="flex flex-col">
+                                            <h6 className="font-bold hover:text-primary">
+                                                <a href={`/concepts/projects/project-details/${project.id}`}>
+                                                    {project.name}
+                                                </a>
+                                            </h6>
+                                            <span>{project.description}</span>
                                         </div>
-                                    )}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
+                                    </div>
+                                    <div className="my-1 sm:my-0 col-span-12 md:col-span-3 lg:col-span-3 md:flex md:items-center">
+                                        <UsersAvatarGroup
+                                            users={project.members?.map(member => ({
+                                                name: member?.member?.user.id || 'Unknown',
+                                                img: member?.member?.user.phoneNumber || '', // Assuming the member has an avatarUrl field
+                                            }))}
+                                        />
+                                    </div>
+                                    <div className="my-1 sm:my-0 col-span-12 sm:col-span-1 flex md:items-center justify-end">
+                                        <div
+                                            className="cursor-pointer text-lg"
+                                            role="button"
+                                            onClick={() =>
+                                                handleToggleFavorite(
+                                                    project.id,
+                                                    true
+                                                )
+                                            }
+                                        >
+                                            <TbStar />
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
+                        ))}
+                </div>
+            </div>
 
-            {/* Pagination component */}
+            {/* Pagination */}
             <div className="flex justify-between items-center p-4">
                 <p>
-                    نمایش {projectsList.length} از {totalCount} پروژه
+                    Showing {projectsList.length} of {totalCount} projects
                 </p>
                 <Pagination
                     currentPage={page}
@@ -114,7 +116,7 @@ const ProjectsTable = ({ columns, searchFilter, reload }: ProjectsTableProps) =>
                     onChange={setPage}
                 />
             </div>
-        </Card>
+        </div>
     );
 };
 
