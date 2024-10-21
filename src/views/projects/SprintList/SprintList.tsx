@@ -1,9 +1,9 @@
-import ProjectListContent from './components/ProjectListContent'
+import SprintListContent from './components/SprintListContent'
 
 const SprintList = () => {
     return (
         <div>
-            <ProjectListContent />
+            <SprintListContent />
         </div>
     )
 }

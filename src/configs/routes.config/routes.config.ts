@@ -55,7 +55,7 @@ export const    protectedRoutes: Routes = [
     {
         key: 'projectBoards',
         path: '/sprints/:id/boards',
-        component: lazy(() => import('@/views/projects/BoardList/SprintList')),
+        component: lazy(() => import('@/views/projects/BoardList/BoardsList')),
         authority: ["project:read"],
 
     },

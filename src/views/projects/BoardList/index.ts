@@ -1,3 +1,3 @@
-import BoardsList from './SprintList'
+import BoardsList from './BoardsList'
 
 export default BoardsList

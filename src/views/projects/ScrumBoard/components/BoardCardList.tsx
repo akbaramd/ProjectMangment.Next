@@ -34,7 +34,7 @@ function InnerList(props: InnerListProps) {
     const { dropProvided, contents, ...rest } = props
 
     return (
-        <div ref={dropProvided.innerRef} className="board-dropzone h-full">
+        <div ref={dropProvided.innerRef} className="board-dropzone h-full ">
             <div className="px-5 h-full">
                 {contents?.map((item, index) => (
                     <Draggable

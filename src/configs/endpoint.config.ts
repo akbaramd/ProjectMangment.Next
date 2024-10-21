@@ -33,14 +33,27 @@ const endpointConfig = {
    
 
     getProjects: '/projects',
-    getProjectDetails: (projectId: string) => `/projects/${projectId}`,
     createProject: '/projects',
+    getProjectDetails: (projectId: string) => `/projects/${projectId}`,
     updateProject: (projectId: string) => `/projects/${projectId}`,
     deleteProject: (projectId: string) => `/projects/${projectId}`,
-    getSprintsByProjectId: (projectId: string) => `/projects/${projectId}/sprints`,
-    getBoardsBySprintId: (sprintId: string) => `/projects/sprints/${sprintId}/boards`,
-    getTasksByBoardId: (boardId: string) => `/projects/boards/${boardId}/tasks`,
-    getBoardDetailsById: (boardId: string) => `/projects/boards/${boardId}/details`,
+    
+    getSprints:  `/sprints`,
+    getSprintDetails: (sprintId: string) => `/sprints/${sprintId}`,
+    createSprint: '/sprints',
+    updateSprint: (sprintId: string) => `/sprints/${sprintId}`,
+    deleteSprint: (sprintId: string) => `/sprints/${sprintId}`,
+
+
+    getBoards: '/boards',
+    getBoardDetails: (boardId: string) => `/boards/${boardId}`,
+    createBoard: '/api/boards',
+    updateBoard: (boardId: string) => `/boards/${boardId}`,
+    deleteBoard: (boardId: string) => `/boards/${boardId}`,
+
+    getBoardsBySprintId: (sprintId: string) => `/boards?sprintId=${sprintId}`,
+    getTasksByBoardId: (boardId: string) => `/boards/${boardId}/tasks`,
+    getBoardDetailsById: (boardId: string) => `/boards/${boardId}`,
 }
 
 export default endpointConfig;

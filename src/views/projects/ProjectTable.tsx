@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Table, Card, Spinner } from '@/components/ui';
+import { Table, Card, Spinner, Pagination } from '@/components/ui'; // Import pagination component
 import { useReactTable, flexRender, getCoreRowModel, ColumnDef } from '@tanstack/react-table';
 import Notification from '@/components/ui/Notification';
 import { ProjectDto } from '@/@types/projects';  // Assume a ProjectDto type exists
@@ -15,7 +15,9 @@ interface ProjectsTableProps {
 
 const ProjectsTable = ({ columns, searchFilter, reload }: ProjectsTableProps) => {
     const [projectsList, setProjectsList] = useState<ProjectDto[]>([]);
-    const [filteredProjects, setFilteredProjects] = useState<ProjectDto[]>([]);  // Client-side filtering
+    const [totalCount, setTotalCount] = useState(0);
+    const [page, setPage] = useState(1);
+    const [pageSize] = useState(10); // Default page size
     const [isLoading, setIsLoading] = useState(false);
     const [fetchError, setFetchError] = useState<string | null>(null);
 
@@ -24,9 +26,9 @@ const ProjectsTable = ({ columns, searchFilter, reload }: ProjectsTableProps) =>
             setIsLoading(true);
             setFetchError(null);
             try {
-                const response = await apiGetProjectsForTenant();  // Fetch the list of projects
-                setProjectsList(response);
-                setFilteredProjects(response);  // Initially show all projects
+                const response = await apiGetProjectsForTenant(pageSize, (page - 1) * pageSize, searchFilter.toString());
+                setProjectsList(response.results);
+                setTotalCount(response.totalCount); // Assuming API returns total count
             } catch (err: any) {
                 setFetchError('Error fetching projects');
             } finally {
@@ -35,22 +37,10 @@ const ProjectsTable = ({ columns, searchFilter, reload }: ProjectsTableProps) =>
         };
 
         fetchProjectsList();
-    }, [reload]);  // Reload data when the reload prop changes
-
-    useEffect(() => {
-        // Apply client-side filter based on searchFilter
-        const filtered = projectsList.filter(project => {
-            const search = searchFilter.toString().toLowerCase();
-            return (
-                project.name?.toLowerCase().includes(search) ||  // Filter by project name
-                project.description?.toLowerCase().includes(search)  // Filter by project description
-            );
-        });
-        setFilteredProjects(filtered);
-    }, [searchFilter, projectsList]);
+    }, [reload, searchFilter, page]);  // Reload data when the reload, search filter, or page changes
 
     const table = useReactTable({
-        data: filteredProjects,  // Use the filtered projects for table data
+        data: projectsList,  // Use the fetched projects for table data
         columns,
         getCoreRowModel: getCoreRowModel(),
     });
@@ -76,7 +66,7 @@ const ProjectsTable = ({ columns, searchFilter, reload }: ProjectsTableProps) =>
 
     return (
         <Card className="overflow-hidden">
-            <Table>
+            <Table className='border'>
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <Tr key={headerGroup.id}>
@@ -111,6 +101,19 @@ const ProjectsTable = ({ columns, searchFilter, reload }: ProjectsTableProps) =>
                     ))}
                 </TBody>
             </Table>
+
+            {/* Pagination component */}
+            <div className="flex justify-between items-center p-4">
+                <p>
+                    نمایش {projectsList.length} از {totalCount} پروژه
+                </p>
+                <Pagination
+                    currentPage={page}
+                    total={totalCount}
+                    pageSize={pageSize}
+                    onChange={setPage}
+                />
+            </div>
         </Card>
     );
 };

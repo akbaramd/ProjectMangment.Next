@@ -19,6 +19,18 @@ export type ProjectDto= {
     tenantId: string; // UUID
 }
 
+export type ProjectDetailsDto= {
+    id: string; // UUID
+    name?: string | null;
+    description: string | null;
+    startDate: string; // ISO date format
+    endDate?: string | null; // ISO date format
+    tenantId: string; // UUID
+    sprints: SprintDetailsDto[] | null;
+}
+
+
+
 export type TaskDto ={
     id: string; // UUID
     title: string | null;
@@ -45,11 +57,13 @@ export type SprintDto ={
     name: string | null;
     startDate: string; // ISO date format
     endDate: string; // ISO date format
-    tasks: TaskDto[] | null;
+  
 }
 
-export type ProjectDetailsDto ={
-    project: ProjectDto;
-    sprints: SprintDto[] | null;
+export type SprintDetailsDto ={
+    id: string; // UUID
+    name: string | null;
+    startDate: string; // ISO date format
+    endDate: string; // ISO date format
     boards: BoardDto[] | null;
 }

@@ -1,12 +1,18 @@
 import { BoardDto, CreateProjectDto, ProjectDetailsDto, ProjectDto, SprintDto, TaskDto, UpdateProjectDto } from '@/@types/projects';
 import ApiService from './ApiService';
 import endpointConfig from '@/configs/endpoint.config';
+import { Paginated } from '@/@types/common';
 
-// Get all projects for a tenant
-export async function apiGetProjectsForTenant(): Promise<ProjectDto[]> {
-    return ApiService.fetchAuthorizedDataWithAxios<ProjectDto[]>({
+// Get all projects for a tenant with pagination and search
+export async function apiGetProjectsForTenant(take: number, skip: number, search?: string): Promise<Paginated<ProjectDto>> {
+    return ApiService.fetchAuthorizedDataWithAxios<Paginated<ProjectDto>>({
         url: endpointConfig.getProjects,
         method: 'get',
+        params: {
+            take,
+            skip,
+            search, // Optional search query
+        },
     });
 }
 
@@ -41,35 +47,5 @@ export async function apiDeleteProject(projectId: string): Promise<void> {
     return ApiService.fetchAuthorizedDataWithAxios<void>({
         url: endpointConfig.deleteProject(projectId),
         method: 'delete',
-    });
-}
-
-// Get sprints for a project
-export async function apiGetSprintsByProjectId(projectId: string): Promise<SprintDto[]> {
-    return ApiService.fetchAuthorizedDataWithAxios<SprintDto[]>({
-        url: `${endpointConfig.getSprintsByProjectId(projectId)}`,
-        method: 'get',
-    });
-}
-
-// Get boards for a sprint
-export async function apiGetBoardsBySprintId(sprintId: string): Promise<BoardDto[]> {
-    return ApiService.fetchAuthorizedDataWithAxios<BoardDto[]>({
-        url: `${endpointConfig.getBoardsBySprintId(sprintId)}`,
-        method: 'get',
-    });
-}
-
-// Get tasks for a board
-export async function apiGetTasksByBoardId(boardId: string): Promise<TaskDto[]> {
-    return ApiService.fetchAuthorizedDataWithAxios<TaskDto[]>({
-        url: `${endpointConfig.getTasksByBoardId(boardId)}`,
-        method: 'get',
-    });
-}
-export async function apiGetBoardDetailsById(boardId: string): Promise<BoardDto> {
-    return ApiService.fetchAuthorizedDataWithAxios<BoardDto>({
-        url: `${endpointConfig.getBoardDetailsById(boardId)}`,
-        method: 'get',
     });
 }

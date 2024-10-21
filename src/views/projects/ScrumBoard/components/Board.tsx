@@ -14,7 +14,7 @@ import {
     DragDropContext,
     DraggableChildrenFn,
 } from '@hello-pangea/dnd'
-import { apiGetBoardDetailsById } from '@/services/ProjectService'
+import { apiGetBoardDetails } from '@/services/BoardService'
 import {  apiGetTenantMembers } from '@/services/TenantService'
 
 import type { DropResult } from '@hello-pangea/dnd'
@@ -65,7 +65,7 @@ const Board = (props: BoardProps) => {
         const fetchBoards = async () => {
             try {
         
-                const boards: BoardDto = await apiGetBoardDetailsById(id || "")
+                const boards: BoardDto = await apiGetBoardDetails(id || "")
                 const transformedColumns = transformBoardsToColumns(boards);
                 updateOrdered(Object.keys(transformedColumns));
                 updateColumns(transformedColumns);

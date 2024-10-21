@@ -1,26 +1,21 @@
-import { useState, useEffect } from 'react';
-
+import { useState } from 'react';
 import Button from '@/components/ui/Button';
 import Notification from '@/components/ui/Notification';
 import toast from '@/components/ui/toast';
 import { ColumnDef } from '@tanstack/react-table';
 import DebouncedInput from '@/views/tenant/invitations/DebouncedInput';
 
-import { ProjectDto } from '@/@types/projects'; // Assuming this type exists
+import { ProjectDto } from '@/@types/projects'; 
 import ProjectsTable from './ProjectTable';
 import { useNavigate } from 'react-router';
 import AddProjectDialog from './AddProjectDialog';
 
-
 const ProjectsPage = () => {
     const [searchFilter, setSearchFilter] = useState<string | number>(''); 
     const [reload, setReload] = useState(false); 
-    const [isRemoveDialogOpen, setRemoveDialogOpen] = useState(false);
-    const [isModifyProjectDialogOpen, setModifyProjectDialogOpen] = useState(false);
     const [isAddProjectDialogOpen, setAddProjectDialogOpen] = useState(false);
-    const [projectToBeRemoved, setProjectToBeRemoved] = useState<ProjectDto | null>(null);
-    const [projectToModify, setProjectToModify] = useState<ProjectDto | null>(null);
     const navigate = useNavigate();
+
     const triggerTableReload = () => {
         setReload((prev) => !prev);
     };
@@ -31,26 +26,6 @@ const ProjectsPage = () => {
                 {message}
             </Notification>
         );
-    };
-
-    const handleRemoveSuccess = () => {
-        toast.push(
-            <Notification title="Success" type="success">
-                Project deleted successfully.
-            </Notification>
-        );
-        triggerTableReload();
-        setRemoveDialogOpen(false);
-    };
-
-    const handleModifyProjectSuccess = () => {
-        toast.push(
-            <Notification title="Success" type="success">
-                Project updated successfully.
-            </Notification>
-        );
-        triggerTableReload();
-        setModifyProjectDialogOpen(false);
     };
 
     const handleAddProjectSuccess = () => {
@@ -64,10 +39,14 @@ const ProjectsPage = () => {
     };
 
     const projectColumns: ColumnDef<ProjectDto>[] = [
-        { header: 'Project Name', accessorKey: 'name' },
-        { header: 'Description', accessorKey: 'description' },
+        { header: 'عنوان', accessorKey: 'name' },
+        { header: 'تاریخ شروع', accessorKey: 'startDate' 
+            ,cell: ({ row }: { row: { original: ProjectDto } }) => {
+                return new Date(row.original.startDate).toLocaleString();
+            },
+        },
         {
-            header: 'Actions',
+            header: 'عملیات',
             accessorKey: 'action',
             cell: ({ row }: { row: { original: ProjectDto } }) => (
                 <div className="flex gap-2">
@@ -75,13 +54,11 @@ const ProjectsPage = () => {
                         color="primary"
                         size="sm"
                         onClick={() => {
-                            navigate(`/projects/${row.original.id}`);
-                            
+                            navigate(`/projects/${row.original.id}/sprints`);
                         }}
                     >
-                        Manage
+                        مدیریت
                     </Button>
-                   
                 </div>
             ),
         },
@@ -89,19 +66,20 @@ const ProjectsPage = () => {
 
     return (
         <div>
+            <h5 className='mb-3'>پروژه ها</h5>
             <div className="flex gap-4 justify-between items-center mb-4">
                 <DebouncedInput
                     className="border-gray-200 bg-white focus:bg-white"
                     value={searchFilter}
                     onChange={(value) => setSearchFilter(value)}
-                    placeholder="Search projects..."
+                    placeholder="جستجوی پروژه..."
                 />
                 <Button
                     color="primary"
                     size="sm"
                     onClick={() => setAddProjectDialogOpen(true)}
                 >
-                    Add Project
+                    افزودن پروژه
                 </Button>
             </div>
 
@@ -110,8 +88,6 @@ const ProjectsPage = () => {
                 searchFilter={searchFilter}
                 reload={reload}
             />
-
-        
 
             <AddProjectDialog
                 isOpen={isAddProjectDialogOpen}

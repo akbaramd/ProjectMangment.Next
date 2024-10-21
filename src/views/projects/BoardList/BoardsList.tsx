@@ -1,9 +1,9 @@
-import BoardLsitContent from './components/ProjectListContent'
+import BoardListContent from './components/BoardListContent'
 
 const BoardsList = () => {
     return (
         <div>
-            <BoardLsitContent />
+            <BoardListContent />
         </div>
     )
 }
