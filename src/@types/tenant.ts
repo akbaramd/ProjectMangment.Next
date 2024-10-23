@@ -9,6 +9,7 @@ export interface Tenant {
 }
 
 export interface TenantMember {
+    id:string
     userId: string;
     user: UserDto;
     roles	: RoleWithPermissionsDto[];

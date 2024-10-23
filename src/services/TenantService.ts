@@ -2,6 +2,7 @@ import ApiService from './ApiService';
 import endpointConfig from '@/configs/endpoint.config';
 import { Tenant, TenantMember } from '@/@types/tenant';
 import { Paginated } from '@/@types/common';
+import { sortBy } from 'lodash';
 
 // Get tenant information (no pagination needed)
 export async function apiGetTenantInfo() {
@@ -12,7 +13,7 @@ export async function apiGetTenantInfo() {
 }
 
 // Get all tenant members (simple list without pagination)
-export async function apiGetTenantMembers(take: number, skip: number, search?: string): Promise<Paginated<TenantMember>> {
+export async function apiGetTenantMembers(take: number, skip: number, search?: string, sortBy?: string, sortDirection?: string): Promise<Paginated<TenantMember>> {
     return ApiService.fetchAuthorizedDataWithAxios<Paginated<TenantMember>>({
         url: endpointConfig.getTenantMembers,
         method: 'get',
@@ -20,6 +21,8 @@ export async function apiGetTenantMembers(take: number, skip: number, search?: s
             take,
             skip,
             search, // Optional search query
+            sortBy,
+            sortDirection,
         },
     });
 }

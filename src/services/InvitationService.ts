@@ -1,14 +1,21 @@
 import { Invitation, InvitationDetails, PaginatedList, PaginationParams, SendInvitationRequest, UpdateInvitationRequest } from '@/@types/invitations';
 import ApiService from './ApiService';
 import endpointConfig from '@/configs/endpoint.config';
+import { Paginated } from '@/@types/common';
 
 
 
-export async function apiGetInvitations(params: PaginationParams) {
-    return ApiService.fetchAuthorizedDataWithAxios<PaginatedList<Invitation>>({
+export async function apiGetInvitations(take: number, skip: number, search?: string, sortBy?: string, sortDirection?: string): Promise<Paginated<Invitation>> {
+    return ApiService.fetchAuthorizedDataWithAxios<Paginated<Invitation>>({
         url: endpointConfig.getInvitations,
         method: 'get',
-        params,
+        params: {
+            take,
+            skip,
+            search,
+            sortBy,
+            sortDirection,
+        },
     });
 }
 

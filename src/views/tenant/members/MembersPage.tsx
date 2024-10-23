@@ -11,7 +11,6 @@ import RemoveMemberDialog from './RemoveMemberDialog';
 import ModifyRoleDialog from '@/views/tenant/members/ModifyMemberDialog'; // Import the new dialog
 
 const MembersPage = () => {
-    const [searchFilter, setSearchFilter] = useState<string | number>(''); // پیگیری فیلتر جستجو
     const [reload, setReload] = useState(false); // پیگیری وضعیت رفرش جدول
     const [isRemoveDialogOpen, setRemoveDialogOpen] = useState(false);
     const [isModifyRoleDialogOpen, setModifyRoleDialogOpen] = useState(false);
@@ -52,35 +51,34 @@ const MembersPage = () => {
     };
 
     // تعریف ستون‌های جدول اعضا
-    const memberColumns: ColumnDef<TenantMember>[] = [
-        { header: 'نام کامل', accessorKey: 'user.fullName' },
-        { header: 'ایمیل', accessorKey: 'user.email' },
-        { header: 'موبایل', accessorKey: 'user.phoneNumber' },
+    const columns: ColumnDef<TenantMember>[] = [
         {
-            header: 'نقش',
-            accessorKey: 'roles',
-            cell: ({ row }: { row: { original: TenantMember } }) => {
-                const { roles } = row.original;
-              
-                return (
-                    <span className={`px-2 py-1 rounded bg-blue-100`}>
-                        {roles.map(x => x.title).join(' | ')}
-                    </span>
-                );
-            },
+            accessorKey: 'user.fullName',
+            id: 'user.fullName',
+            header: 'نام نمایشی',
+            cell: (info) => info.getValue(),
+            enableSorting: true,
         },
         {
-            header: 'وضعیت',
-            accessorKey: 'memberStatus',
-            cell: ({ row }: { row: { original: TenantMember } }) => {
-                const { memberStatus } = row.original;
-                const name = TenantMemberStatus[memberStatus];
-                return (
-                    <span className={`px-2 py-1 rounded bg-green-100`}>
-                        {name}
-                    </span>
-                );
-            },
+            accessorKey: 'user.email',
+            id: 'user.email',
+            header: 'ایمیل',
+            cell: (info) => info.getValue(),
+            enableSorting: true,
+            meta:{
+                responsive: true
+            }
+        },
+        {
+            accessorKey: 'user.phoneNumber',
+            id:'user.phoneNumber',
+            header: 'شماره همراه',
+            cell: (info) => info.getValue(),
+            enableSorting: true,
+            meta:{
+                responsive: true
+            }
+            
         },
         {
             header: 'عملیات',
@@ -118,24 +116,13 @@ const MembersPage = () => {
                     return <small>نقش مالک قابل ویرایش نیست</small>;
                 }
             },
-        },
+        }
+        // Add more columns as needed
     ];
-
     return (
         <div>
-            <div className="flex gap-4 justify-between items-center mb-4">
-                <DebouncedInput
-                    className="border-gray-200 bg-white focus:bg-white"
-                    value={searchFilter}
-                    onChange={(value) => setSearchFilter(value)} // به‌روزرسانی فیلتر جستجو
-                    placeholder="جستجوی عضو..."
-                />
-            </div>
-
             <MemberTable
-                columns={memberColumns}
-                searchFilter={searchFilter}
-                reload={reload} // ارسال وضعیت رفرش به جدول
+                columns={columns}
             />  
 
             <RemoveMemberDialog

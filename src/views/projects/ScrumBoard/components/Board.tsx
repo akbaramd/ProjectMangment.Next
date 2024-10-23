@@ -98,8 +98,8 @@ const Board = (props: BoardProps) => {
         // Function to fetch tenant members
         const fetchMembers = async () => {
             try {
-                const members: TenantMember[] = await apiGetTenantMembers()
-                const transformedMembers = members.map(transformToMember)
+                const members = await apiGetTenantMembers(100, 0)
+                const transformedMembers = members.results.map(transformToMember)
                 updateBoardMembers(transformedMembers)
                 updateAllMembers(transformedMembers)
             } catch (error) {

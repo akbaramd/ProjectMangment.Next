@@ -6,7 +6,8 @@ import Views from '@/views'
 import appConfig from './configs/app.config'
 import './locales'
 import { TenantProvider } from '@/tenant/TenantContext'
-
+import { Provider } from 'react-redux'
+import { store } from './store/configureStore'
 
 if (appConfig.enableMock) {
     import('./mock')
@@ -15,7 +16,8 @@ if (appConfig.enableMock) {
 function App() {
    
     return (
-        <Theme>
+        <Provider store={store}>
+            <Theme>
             <BrowserRouter>
                 <AuthProvider>
                     <TenantProvider>
@@ -26,6 +28,7 @@ function App() {
                 </AuthProvider>
             </BrowserRouter>
         </Theme>
+        </Provider>
     )
 }
 

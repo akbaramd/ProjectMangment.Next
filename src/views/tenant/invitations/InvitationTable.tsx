@@ -1,141 +1,90 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Table, Pagination, Card, Spinner } from '@/components/ui'
-import { useReactTable, flexRender, getCoreRowModel, getPaginationRowModel, ColumnDef } from '@tanstack/react-table';
-import { Invitation, PaginationParams } from '@/@types/invitations';
-import { apiGetInvitations } from '@/services/InvitationService';
-import Notification from '@/components/ui/Notification';
+// src/components/InvitationTable.tsx
+import React, { useEffect } from 'react';
 
-const { Tr, Th, Td, THead, TBody, Sorter } = Table;
+import { ColumnDef, OnChangeFn, SortingState } from '@tanstack/react-table';
+import DynamicTable from '@/components/DynamicTable';
+import { Invitation } from '@/@types/invitations';
+import { fetchInvitations } from '@/store/invitation/invitationActions';
+import { useAppDispatch, useAppSelector } from '@/store/configureStore';
+import { selectInvitations, selectIsLoading, selectError, selectInvitationState } from '@/store/invitation/invitationSelectors';
+import { setCurrentPage, setSearchFilter, setSorting } from '@/store/invitation/invitationSlice';
 
 interface InvitationTableProps {
-    columns: ColumnDef<Invitation>[];
-    searchFilter: string | number; // Add searchFilter as a prop
-    reload: boolean; // Prop to control when to reload the data
+  columns: ColumnDef<Invitation, any>[];
+  searchPlaceholder?: string;
+  additionalElements?: React.ReactNode;
 }
 
-const InvitationTable = ({ columns, searchFilter, reload }: InvitationTableProps) => {
-    const [invitationsList, setInvitationsList] = useState<Invitation[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [fetchError, setFetchError] = useState<string | null>(null);
-    const [currentPage, setCurrentPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [totalRecords, setTotalRecords] = useState(0);
+const InvitationTable = ({ columns, searchPlaceholder, additionalElements }: InvitationTableProps) => {
+  const dispatch = useAppDispatch();
+  const invitations = useAppSelector(selectInvitations);
+  const isLoading = useAppSelector(selectIsLoading);
+  const error = useAppSelector(selectError);
+  const {
+    currentPage,
+    rowsPerPage,
+    totalRecords,
+    searchFilter,
+    sortField,
+    sortOrder,
+  } = useAppSelector(selectInvitationState);
 
-    const fetchInvitationsList = useCallback(async () => {
-        setIsLoading(true);
-        setFetchError(null);
+  useEffect(() => {
+    dispatch(fetchInvitations());
+  }, [dispatch, currentPage, searchFilter, sortField, sortOrder]);
 
-        try {
-            const paginationParams: PaginationParams = {
-                pageNumber: currentPage + 1, // Adjusting for 1-based index
-                pageSize: rowsPerPage,
-                search: searchFilter.toString(), // Use searchFilter for filtering
-            };
+  const handlePaginationChange = (page: number) => {
+    dispatch(setCurrentPage(page));
+  };
 
-            const response = await apiGetInvitations(paginationParams);
-            setInvitationsList(response.items);
-            setTotalRecords(response.totalCount);
-        } catch (err: any) {
-            setFetchError('خطا در دریافت دعوت‌نامه‌ها');
-        } finally {
-            setIsLoading(false);
-        }
-    }, [currentPage, rowsPerPage, searchFilter]); // Add searchFilter as a dependency
+  const handleFilterChange = (filter: string) => {
+    dispatch(setSearchFilter(filter));
+  };
 
-    useEffect(() => {
-        fetchInvitationsList();
-    }, [fetchInvitationsList, reload]); // Reload data whenever reload changes
-
-    const table = useReactTable({
-        data: invitationsList,
-        columns,
-        pageCount: Math.ceil(totalRecords / rowsPerPage),
-        manualPagination: true,
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        state: {
-            pagination: {
-                pageIndex: currentPage,
-                pageSize: rowsPerPage,
-            },
-        },
-    });
-
-    if (isLoading) {
-        return (
-            <Card className="flex justify-center items-center  text-center">
-                <div>
-                    <Spinner className="mx-auto mb-4" size="30px" />
-                    <p className="font-medium">در حال بارگذاری داده‌ها، لطفا صبر کنید...</p>
-                </div>
-            </Card>
-        );
+  const handleSortingChange: OnChangeFn<SortingState> = (updaterOrValue) => {
+    if (Array.isArray(updaterOrValue) && updaterOrValue.length > 0) {
+      dispatch(
+        setSorting({
+          field: updaterOrValue[0].id,
+          order: updaterOrValue[0].desc ? 'desc' : 'asc',
+        })
+      );
     }
+  };
 
-    if (fetchError) {
-        return (
-            <Notification title="خطا" type="danger">
-                {fetchError}
-            </Notification>
-        );
-    }
-
-    return (
-        <Card
-            className="overflow-hidden"
-            footer={{
-                content: (
-                    <div className="flex items-center justify-between ">
-                        <span>
-                            صفحه <strong>{currentPage + 1} از {table.getPageCount()}</strong>
-                        </span>
-                        <Pagination
-                            pageSize={rowsPerPage}
-                            currentPage={currentPage + 1}
-                            total={totalRecords}
-                            onChange={(page) => setCurrentPage(page - 1)}
-                        />
-                    </div>
-                ),
-            }}
-        >
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {header.isPlaceholder ? null : (
-                                        <div
-                                            className={header.column.getCanSort() ? 'cursor-pointer' : ''}
-                                            onClick={header.column.getToggleSortingHandler()}
-                                        >
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
-                                            <Sorter sort={header.column.getIsSorted()} />
-                                        </div>
-                                    )}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
-        </Card>
+  const handleSortFieldChange = (field: string, order: 'asc' | 'desc') => {
+    dispatch(
+      setSorting({
+        field,
+        order,
+      })
     );
+  };
+
+  return (
+    <DynamicTable<Invitation>
+      title="دعوت‌نامه‌ها"
+      columns={columns}
+      data={invitations}
+      totalRecords={totalRecords}
+      currentPage={currentPage}
+      rowsPerPage={rowsPerPage}
+      isLoading={isLoading}
+      fetchError={error}
+      sorting={[
+        {
+          id: sortField,
+          desc: sortOrder === 'desc',
+        },
+      ]}
+      onSortingChange={handleSortingChange}
+      onPaginationChange={handlePaginationChange}
+      onFilterChange={handleFilterChange}
+      onSortFieldChange={handleSortFieldChange}
+      searchPlaceholder={searchPlaceholder || 'جستجوی دعوت‌نامه‌ها...'}
+      additionalElements={additionalElements}
+    />
+  );
 };
 
 export default InvitationTable;

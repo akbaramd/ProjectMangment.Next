@@ -49,7 +49,7 @@ export type User = {
     phoneNumber?	: string | null;
     fullName?	: string | null;
     email?: string | null;
-    permissions: string[] ;
+    permissions?: string[] ;
     avatar?: string | null;
     roles?: string[] | null;
 

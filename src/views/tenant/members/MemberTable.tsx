@@ -1,116 +1,92 @@
-import { useState, useEffect } from 'react';
+// src/components/MemberTable.tsx
+
+import { useEffect } from 'react';
 import { ColumnDef, SortingState, OnChangeFn } from '@tanstack/react-table';
-import { apiGetTenantMembers } from '@/services/TenantService';
 import { TenantMember } from '@/@types/tenant';
 import DynamicTable from '@/components/DynamicTable';
 import { Button } from '@/components/ui';
-import { FaUsers } from 'react-icons/fa';
-import { PiPlusDuotone } from 'react-icons/pi';
+import { FaPlus } from 'react-icons/fa';
+import { useAppDispatch, useAppSelector } from '@/store/configureStore';
+import { setCurrentPage, setSearchFilter, setSorting } from '@/store/invitation/invitationSlice';
+import { fetchTenantMembers } from '@/store/tenant-member/tenantMemberActions';
+import { selectTenantMembers, selectTenantMembersIsLoading, selectTenantMembersError, selectTenantMembersTotalRecords, selectTenantMembersCurrentPage, selectTenantMembersRowsPerPage, selectTenantMembersSortField, selectTenantMembersSortOrder, selectTenantMembersSearchFilter } from '@/store/tenant-member/tenantMemberSelectors';
 
 interface MemberTableProps {
-    reload?: boolean;
+  columns: ColumnDef<TenantMember>[];
+  additionalElements?: React.ReactNode;
 }
 
-const columns: ColumnDef<TenantMember>[] = [
-    {
-        accessorKey: 'user.fullName',
-        id: 'fullName',
-        header: 'Full Name',
-        cell: (info) => info.getValue(),
-        enableSorting: true,
-    },
-    {
-        accessorKey: 'user.email',
-        id: 'email',
-        header: 'Email',
-        cell: (info) => info.getValue(),
-        enableSorting: true,
-    },
-    {
-        accessorKey: 'user.phoneNumber',
-        id: 'phoneNumber',
-        header: 'Phone Number',
-        cell: (info) => info.getValue(),
-        enableSorting: true,
-    },
-    // Add more columns as needed
-];
+const MemberTable = ({ columns, additionalElements }: MemberTableProps) => {
+  const dispatch = useAppDispatch();
 
-const MemberTable = ({ reload }: MemberTableProps) => {
-    const [data, setData] = useState<TenantMember[]>([]);
-    const [totalRecords, setTotalRecords] = useState(0);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [rowsPerPage] = useState(10);
-    const [isLoading, setIsLoading] = useState(false);
-    const [fetchError, setFetchError] = useState<string | null>(null);
-    const [searchFilter, setSearchFilter] = useState('');
-    const [sorting, setSorting] = useState<SortingState>([]);
+  // Selectors
+  const data = useAppSelector(selectTenantMembers);
+  const isLoading = useAppSelector(selectTenantMembersIsLoading);
+  const error = useAppSelector(selectTenantMembersError);
+  const totalRecords = useAppSelector(selectTenantMembersTotalRecords);
+  const currentPage = useAppSelector(selectTenantMembersCurrentPage);
+  const rowsPerPage = useAppSelector(selectTenantMembersRowsPerPage);
+  const sortField = useAppSelector(selectTenantMembersSortField);
+  const sortOrder = useAppSelector(selectTenantMembersSortOrder);
+  const searchFilter = useAppSelector(selectTenantMembersSearchFilter);
 
-    const fetchMembers = async () => {
-        setIsLoading(true);
-        setFetchError(null);
-        try {
-            const response = await apiGetTenantMembers(rowsPerPage, (currentPage - 1) * rowsPerPage, searchFilter);
+  useEffect(() => {
+    dispatch(fetchTenantMembers());
+  }, [dispatch, currentPage, searchFilter, sortField, sortOrder]);
 
-            setData(response.results); // Adjust based on your API response structure
-            setTotalRecords(response.totalCount); // Adjust based on your API response structure
-        } catch (error: any) {
-            setFetchError('Error fetching members.');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+  const handlePaginationChange = (page: number) => {
+    dispatch(setCurrentPage(page));
+  };
 
-    useEffect(() => {
-        fetchMembers();
-    }, [currentPage, searchFilter, sorting, reload]);
+  const handleFilterChange = (filter: string) => {
+    dispatch(setSearchFilter(filter));
+  };
 
-    const handlePaginationChange = (page: number) => {
-        setCurrentPage(page);
-    };
+  const handleSortingChange: OnChangeFn<SortingState> = (updaterOrValue) => {
+    if (Array.isArray(updaterOrValue) && updaterOrValue.length > 0) {
+      const { id, desc } = updaterOrValue[0];
+      dispatch(
+        setSorting({
+          field: id,
+          order: desc ? 'desc' : 'asc',
+        })
+      );
+    }
+  };
 
-    const handleFilterChange = (filter: string) => {
-        setSearchFilter(filter);
-        setCurrentPage(1);
-    };
-
-    const handleSortingChange: OnChangeFn<SortingState> = (updaterOrValue) => {
-        setSorting((old) => {
-            const newSorting =
-                typeof updaterOrValue === 'function' ? updaterOrValue(old) : updaterOrValue;
-            return newSorting;
-        });
-        setCurrentPage(1);
-    };
-
-    return (
-        <DynamicTable<TenantMember>
-            title="Members List"
-            columns={columns}
-            data={data}
-            totalRecords={totalRecords}
-            currentPage={currentPage}
-            rowsPerPage={rowsPerPage}
-            isLoading={isLoading}
-            fetchError={fetchError}
-            sorting={sorting}
-            onSortingChange={handleSortingChange}
-            onPaginationChange={handlePaginationChange}
-            onFilterChange={handleFilterChange}
-            sortableColumns={[
-                { id: 'fullName', label: 'Full Name' },
-                { id: 'email', label: 'Email' },
-                { id: 'phoneNumber', label: 'Phone Number' },
-                // Add other sortable columns as needed
-            ]}
-            additionalElements={
-                <Button variant="solid" onClick={() => { /* Add member logic */ }}>
-                    <PiPlusDuotone/>
-                </Button>
-            }
-            searchPlaceholder="Search members..."
-        />
+  const handleSortFieldChange = (field: string, order: 'asc' | 'desc') => {
+    dispatch(
+      setSorting({
+        field,
+        order,
+      })
     );
+  };
+
+  return (
+    <DynamicTable<TenantMember>
+      title="لیست اعضا"
+      columns={columns}
+      data={data}
+      totalRecords={totalRecords}
+      currentPage={currentPage}
+      rowsPerPage={rowsPerPage}
+      isLoading={isLoading}
+      fetchError={error}
+      sorting={[
+        {
+          id: sortField,
+          desc: sortOrder === 'desc',
+        },
+      ]}
+      onSortingChange={handleSortingChange}
+      onPaginationChange={handlePaginationChange}
+      onFilterChange={handleFilterChange}
+      onSortFieldChange={handleSortFieldChange}
+      additionalElements={additionalElements}
+      searchPlaceholder="جستجوی اعضا ..."
+    />
+  );
 };
 
 export default MemberTable;

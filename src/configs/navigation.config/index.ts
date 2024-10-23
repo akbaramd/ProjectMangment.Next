@@ -20,7 +20,7 @@ const navigationConfig: NavigationTree[] = [
         path: '',
         title: 'مدیریت پروژه ها',
         translateKey: 'nav.tenant',
-        icon: 'collapseMenu',
+        icon: 'projectSection',
         type: NAV_ITEM_TYPE_COLLAPSE,
         authority: ["project:read"],
         subMenu: [
@@ -42,7 +42,7 @@ const navigationConfig: NavigationTree[] = [
         path: '',
         title: 'مدیریت مجموعه',
         translateKey: 'nav.tenant',
-        icon: 'collapseMenu',
+        icon: 'tenantSection',
         type: NAV_ITEM_TYPE_COLLAPSE,
         authority: ["tenant:read","invitation:read"],
         subMenu: [
