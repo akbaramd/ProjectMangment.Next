@@ -2,6 +2,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import invitationReducer from './invitation/invitationSlice';
 import tenantReducer from './tenant/tenantSlice';
+import projectReducer from './project/projectSlice';
 import tenantMemberReducer from './tenant-member/tenantMemberSlice';
 import { useDispatch, TypedUseSelectorHook, useSelector } from 'react-redux';
 
@@ -10,6 +11,7 @@ export const store = configureStore({
     invitations: invitationReducer,
     tenant: tenantReducer,
     tenantMember: tenantMemberReducer,
+    projects: projectReducer,
     // Add other reducers here
   },
 });

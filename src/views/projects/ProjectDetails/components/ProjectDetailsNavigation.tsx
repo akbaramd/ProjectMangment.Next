@@ -13,7 +13,7 @@ type ProjectDetailsNavigationProps = {
 }
 
 const navigation = [
-    { label: 'Settings', value: 'settings', icon: <TbSettings /> },
+    { label: 'اطلاعات پروژه', value: 'settings', icon: <TbSettings /> },
 ]
 
 const ProjectDetailsNavigation = ({
