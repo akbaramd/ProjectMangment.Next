@@ -54,14 +54,14 @@ export const    protectedRoutes: Routes = [
     },
     {
         key: 'projectBoards',
-        path: '/sprints/:id/boards',
+        path: '/projects/:projectId/sprints/:sprintId/boards',
         component: lazy(() => import('@/views/projects/BoardList/BoardsList')),
         authority: ["project:read"],
 
     },
     {
         key: 'ScrumBoards',
-        path: '/boards/:id',
+        path: '/projects/:projectId/sprints/:sprintId/boards/:boardId',
         component: lazy(() => import('@/views/projects/ScrumBoard/ScrumBoard')),
         authority: ["project:read"],
 

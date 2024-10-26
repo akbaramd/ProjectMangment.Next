@@ -19,23 +19,14 @@ import cloneDeep from 'lodash/cloneDeep'
 import { TbPlus, TbDownload, TbTrash } from 'react-icons/tb'
 import isEmpty from 'lodash/isEmpty'
 import { createUID, taskLabelColors, labelList } from '../utils'
-import { Ticket, Comment, Member } from '../types'
+import { TaskCommentDto, TaskDto } from '@/@types/task'
 
-interface TransformedComment extends Omit<Comment, 'date'> {
+
+interface TransformedComment extends Omit<TaskCommentDto, 'date'> {
     date: Date
 }
 
 const { TabNav, TabList, TabContent } = Tabs
-
-const createCommentObject = (message: string): TransformedComment => {
-    return {
-        id: createUID(10),
-        name: 'Angelina Gotelli',
-        src: '/img/avatars/thumb-1.jpg',
-        message: message,
-        date: new Date(),
-    }
-}
 
 const AddMoreMember = () => {
     return (
@@ -53,11 +44,11 @@ const AddMoreMember = () => {
 }
 
 const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
-    const { updateColumns, ticketId, columns, boardMembers } =
+    const { updateColumns, ticketId,tasks, columns, boardMembers } =
         useScrumBoardStore()
 
     const [ticketData, setTicketData] = useState<
-        Partial<Omit<Ticket, 'comments'> & { comments: TransformedComment[] }>
+        Partial<Omit<TaskDto, 'comments'> & { comments: TransformedComment[] }>
     >({})
     const [loading, setLoading] = useState(false)
 
@@ -69,7 +60,7 @@ const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
         for (const key in columns) {
             if (Object.hasOwnProperty.call(columns, key)) {
                 const board = columns[key]
-                const result = board.find((ticket) => ticket.id === ticketId)
+                const result = tasks.find((ticket) => ticket.id === ticketId)
                 if (result) {
                     ticketDetail = result
                 }
@@ -89,17 +80,7 @@ const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
     }, [ticketData, ticketData])
 
     const submitComment = () => {
-        if (commentInput.current) {
-            const message = commentInput.current.value
-            const comment = createCommentObject(message)
-            const comments = cloneDeep(ticketData.comments)
-            comments?.push(comment)
-            setTicketData((prevState) => ({
-                ...prevState,
-                ...{ comments: comments },
-            }))
-            commentInput.current.value = ''
-        }
+       
     }
 
     const handleTicketClose = () => {
@@ -107,34 +88,14 @@ const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
     }
 
     const onUpdateColumn = () => {
-        const data = cloneDeep(columns)
-        for (const key in data) {
-            if (Object.hasOwnProperty.call(data, key)) {
-                const board = data[key]
-                board.forEach((ticket, index) => {
-                    if (ticket.id === ticketId) {
-                        data[key][index] = ticketData as Ticket
-                    }
-                })
-            }
-        }
-        updateColumns(data)
     }
 
     const onAddMemberClick = (id: string) => {
-        const newMember = boardMembers.find((member) => member.id === id)
-        const members = cloneDeep(ticketData.members)
-        members?.push(newMember as Member)
-        setTicketData((prevState) => ({
-            ...prevState,
-            ...{ members: members },
-        }))
+       
     }
 
     const onAddLabelClick = (label: string) => {
-        const labels = cloneDeep(ticketData.labels)
-        labels?.push(label)
-        setTicketData((prevState) => ({ ...prevState, ...{ labels: labels } }))
+       
     }
 
     return (
@@ -148,7 +109,7 @@ const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
                     <div className="flex gap-2 mb-10">
                         <div className="w-full">
                             <div className="flex justify-between">
-                                <h4>{ticketData.name}</h4>
+                                <h4>{ticketData.title}</h4>
                                 <div>
                                     <CloseButton onClick={handleTicketClose} />
                                 </div>
@@ -169,21 +130,25 @@ const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
                                         }}
                                         avatarGroupProps={{ maxCount: 4 }}
                                         chained={false}
-                                        users={ticketData.members}
+                                        users={ticketData?.assigneeMembers?.map(c => ({
+                                            id: c.id,
+                                            name: c.tenantMember?.user?.fullName!,
+                                            avatar:  ""
+                                        })) || []}
                                     />
                                     {boardMembers.length !==
-                                        ticketData.members?.length && (
+                                        ticketData.assigneeMembers?.length && (
                                         <Dropdown
                                             renderTitle={<AddMoreMember />}
                                         >
                                             {boardMembers.map(
                                                 (member) =>
-                                                    !ticketData.members?.some(
+                                                    !ticketData.assigneeMembers?.some(
                                                         (m) =>
                                                             m.id === member.id,
                                                     ) && (
                                                         <Dropdown.Item
-                                                            key={member.name}
+                                                            key={member.tenantMember?.user?.fullName}
                                                             eventKey={member.id}
                                                             onSelect={
                                                                 onAddMemberClick
@@ -197,12 +162,12 @@ const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
                                                                             22
                                                                         }
                                                                         src={
-                                                                            member.img
+                                                                           ""
                                                                         }
                                                                     />
                                                                     <span className="ml-2 rtl:mr-2">
                                                                         {
-                                                                            member.name
+                                                                            member.tenantMember?.user?.fullName
                                                                         }
                                                                     </span>
                                                                 </div>
@@ -218,7 +183,7 @@ const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
                                 <div className="font-semibold text-gray-900 dark:text-gray-100 min-w-[150px]">
                                     Label:
                                 </div>
-                                <div className="flex items-center gap-1">
+                                {/* <div className="flex items-center gap-1">
                                     {ticketData.labels?.map((label) => (
                                         <Tag
                                             key={label}
@@ -262,7 +227,7 @@ const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
                                                 ),
                                         )}
                                     </Dropdown>
-                                </div>
+                                </div> */}
                             </div>
                             <div className="flex items-center min-h-[30px]">
                                 <div className="font-semibold text-gray-900 dark:text-gray-100 min-w-[150px]">
@@ -307,7 +272,7 @@ const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
                                                                     <Avatar
                                                                         shape="circle"
                                                                         src={
-                                                                            comment.src
+                                                                            ''
                                                                         }
                                                                     />
                                                                 </div>
@@ -315,7 +280,7 @@ const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
                                                                     <div className="flex items-center mb-2">
                                                                         <span className="font-semibold text-gray-900 dark:text-gray-100">
                                                                             {
-                                                                                comment.name
+                                                                                comment.projectMember?.tenantMember?.user?.fullName
                                                                             }
                                                                         </span>
                                                                         <span className="mx-1">
@@ -332,7 +297,7 @@ const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
                                                                     </div>
                                                                     <p className="mb-0">
                                                                         {
-                                                                            comment.message
+                                                                            comment.content
                                                                         }
                                                                     </p>
                                                                 </div>
@@ -367,7 +332,7 @@ const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
                                     </div>
                                 </TabContent>
                                 <TabContent value="attachments">
-                                    {ticketData.attachments &&
+                                    {/* {ticketData.attachments &&
                                     ticketData?.attachments?.length > 0 ? (
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
                                             {ticketData.attachments.map(
@@ -424,7 +389,7 @@ const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
                                                 No attachments
                                             </p>
                                         </div>
-                                    )}
+                                    )} */}
                                 </TabContent>
                             </div>
                         </Tabs>

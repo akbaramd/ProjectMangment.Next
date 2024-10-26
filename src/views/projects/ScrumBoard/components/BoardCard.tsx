@@ -1,79 +1,67 @@
-import { forwardRef } from 'react'
-import Card from '@/components/ui/Card'
-import Tag from '@/components/ui/Tag'
-import UsersAvatarGroup from '@/components/shared/UsersAvatarGroup'
-import IconText from '@/components/shared/IconText'
-import { TbPaperclip, TbMessageCircle } from 'react-icons/tb'
-import { useScrumBoardStore } from '../store/scrumBoardStore'
-import { taskLabelColors } from '../utils'
-import type { Ticket } from '../types'
-import type { CardProps } from '@/components/ui/Card'
+import { forwardRef } from 'react';
+import Card from '@/components/ui/Card';
+import { TbMessageCircle, TbPaperclip, TbRowRemove } from 'react-icons/tb';
+import { useScrumBoardStore } from '../store/scrumBoardStore';
+import { apiDeleteTask } from '@/services/TaskService';
+import type { Ticket } from '../types';
+import type { CardProps } from '@/components/ui/Card';
+import { TaskDto } from '@/@types/task';
+import { Dropdown } from '@/components/ui';
+import EllipsisButton from '@/components/shared/EllipsisButton';
 
 interface BoardCardProps extends CardProps {
-    data: Ticket
+    data: TaskDto;
 }
 
 const BoardCard = forwardRef<HTMLDivElement, BoardCardProps>((props, ref) => {
-    const { openDialog, updateDialogView, setSelectedTicketId } =
-        useScrumBoardStore()
+    const { openDialog, updateDialogView, setSelectedTicketId, updateTasks, tasks } = useScrumBoardStore();
 
-    const { data, ...rest } = props
-
-    const { id, name, comments, attachments, members, labels } = data
+    const { data, ...rest } = props;
+    const { id, title, comments, assigneeMembers } = data;
 
     const onCardClick = () => {
-        openDialog()
-        updateDialogView('TICKET')
-        setSelectedTicketId(id)
-    }
+        openDialog();
+        updateDialogView('TICKET');
+        setSelectedTicketId(id);
+    };
+
+    const onDeleteTask = async () => {
+        try {
+            await apiDeleteTask(id); // Call the API to delete the task by ID
+
+            // Update the state by filtering out the deleted task
+            const updatedTasks = tasks.filter(task => task.id !== id);
+            updateTasks(updatedTasks); // Update the store with the new tasks list
+        } catch (error) {
+            console.error('Error deleting task:', error);
+        }
+    };
 
     return (
         <Card
             ref={ref}
             clickable
-            className="hover:shadow-lg rounded-lg mb-4 border-0"
-            bodyClass="p-4"
-            onClick={() => onCardClick()}
+            className="mb-2 flex justify-between"
+            bodyClass="p-4 flex justify-between items-center w-full"
             {...rest}
         >
-            <div className="mb-2 font-bold heading-text text-base">{name}</div>
-            {labels && labels.length > 0 && (
-                <>
-                    {labels.map((label, index) => (
-                        <Tag
-                            key={label + index}
-                            className={`mr-2 rtl:ml-2 mb-2 ${taskLabelColors[label]}`}
-                        >
-                            {label}
-                        </Tag>
-                    ))}
-                </>
-            )}
-            <div className="flex items-center justify-between mt-3">
-                <UsersAvatarGroup avatarProps={{ size: 25 }} users={members} />
-                <div className="flex items-center gap-2">
-                    {comments && comments.length > 0 && (
-                        <IconText
-                            className="font-semibold gap-1"
-                            icon={<TbMessageCircle className="text-base" />}
-                        >
-                            {comments.length}
-                        </IconText>
-                    )}
-                    {attachments && attachments.length > 0 && (
-                        <IconText
-                            icon={<TbPaperclip />}
-                            className="text-base gap-1"
-                        >
-                            {attachments.length}
-                        </IconText>
-                    )}
-                </div>
-            </div>
+            <div onClick={() => onCardClick()} className="heading-text text-sm">{id}</div>
+
+            <Dropdown placement="bottom-end" renderTitle={<EllipsisButton />}>
+                <Dropdown.Item
+                    eventKey="deleteTask"
+                    onClick={onDeleteTask}
+                >
+                    <span className="text-lg">
+                        <TbRowRemove />
+                    </span>
+                    <span>حذف وظیفه</span>
+                </Dropdown.Item>
+            </Dropdown>
         </Card>
-    )
-})
+    );
+});
 
-BoardCard.displayName = 'BoardCard'
+BoardCard.displayName = 'BoardCard';
 
-export default BoardCard
+export default BoardCard;

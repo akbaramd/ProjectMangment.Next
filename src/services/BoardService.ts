@@ -2,7 +2,7 @@ import { BoardDto,  } from '@/@types/projects';
 import ApiService from './ApiService';
 import endpointConfig from '@/configs/endpoint.config';
 import { Paginated } from '@/@types/common';
-import { CreateBoardDto, UpdateBoardDto } from '@/@types/boards';
+import { CreateBoardDto, UpdateBoardColumnDto, UpdateBoardDto } from '@/@types/boards';
 
 // Boards Endpoints
 
@@ -63,3 +63,12 @@ export async function apiGetBoardDetailsById(boardId: string): Promise<BoardDto>
     });
 }
 
+
+// Update an existing board
+export async function apiUpdateBoardColumn(boardId: string, columnId: string, data: UpdateBoardColumnDto): Promise<BoardDto> {
+    return ApiService.fetchAuthorizedDataWithAxios<BoardDto>({
+        url: `${endpointConfig.updateBoardColumn(boardId,columnId)}`,
+        method: 'put',
+        data,
+    });
+}

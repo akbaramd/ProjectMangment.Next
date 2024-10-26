@@ -1,20 +1,31 @@
 import ApiService from './ApiService';
 import endpointConfig from '@/configs/endpoint.config';
-import { Tenant, TenantMember } from '@/@types/tenant';
-import { Paginated } from '@/@types/common';
-import { sortBy } from 'lodash';
+import { Tenant, TenantMember, PaginatedList } from '@/@types/tenant';
 
-// Get tenant information (no pagination needed)
-export async function apiGetTenantInfo() {
+
+// Get tenant information (no pagination or query parameters needed)
+export async function apiGetTenantInfo(): Promise<Tenant> {
     return ApiService.fetchAuthorizedDataWithAxios<Tenant>({
         url: endpointConfig.getTenantInfo,
         method: 'get',
     });
 }
 
-// Get all tenant members (simple list without pagination)
-export async function apiGetTenantMembers(take: number, skip: number, search?: string, sortBy?: string, sortDirection?: string): Promise<Paginated<TenantMember>> {
-    return ApiService.fetchAuthorizedDataWithAxios<Paginated<TenantMember>>({
+// Get all tenant members with pagination, sorting, and search capabilities
+export async function apiGetTenantMembers({
+    take,
+    skip,
+    search,
+    sortBy,
+    sortDirection
+}: {
+    take: number;
+    skip: number;
+    search?: string;
+    sortBy?: string;
+    sortDirection?: string;
+}): Promise<PaginatedList<TenantMember>> {
+    return ApiService.fetchAuthorizedDataWithAxios<PaginatedList<TenantMember>>({
         url: endpointConfig.getTenantMembers,
         method: 'get',
         params: {
@@ -27,17 +38,17 @@ export async function apiGetTenantMembers(take: number, skip: number, search?: s
     });
 }
 
-// Remove a member from the tenant (Only Owner, Manager, Administrator)
-export async function apiRemoveTenantMember(memberId: string) {
-    return ApiService.fetchAuthorizedDataWithAxios({
+// Remove a member from the tenant by their ID (Only accessible by Owner, Manager, Administrator)
+export async function apiRemoveTenantMember(memberId: string): Promise<void> {
+    return ApiService.fetchAuthorizedDataWithAxios<void>({
         url: endpointConfig.removeTenantMember(memberId),
         method: 'delete',
     });
 }
 
-// Update a tenant member's role (Only Owner, Manager, Administrator)
-export async function apiUpdateTenantMemberRole(memberId: string, role: string) {
-    return ApiService.fetchAuthorizedDataWithAxios({
+// Update a tenant member's role using the member ID and role (Only accessible by Owner, Manager, Administrator)
+export async function apiUpdateTenantMemberRole(memberId: string, role: string): Promise<void> {
+    return ApiService.fetchAuthorizedDataWithAxios<void>({
         url: endpointConfig.updateTenantMemberRole(memberId),
         method: 'put',
         data: { role },

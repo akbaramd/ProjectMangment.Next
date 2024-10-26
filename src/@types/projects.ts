@@ -1,77 +1,75 @@
+import { TaskDto } from "./task";
 import { TenantMember } from "./tenant";
 
-export type CreateProjectDto= {
+export type CreateProjectDto = {
     name?: string | null;
     description?: string | null;
-    startDate?: string| null; // ISO date format
-}
+    startDate: string; // ISO date format, required
+};
 
-export type UpdateProjectDto ={
+export type UpdateProjectDto = {
     name?: string | null;
     description?: string | null;
     endDate?: string | null; // ISO date format
-}
+};
 
-export type ProjectDto= {
+export type ProjectDto = {
     id: string; // UUID
     name?: string | null;
-    description: string | null;
+    description?: string | null;
+    startDate: string; // ISO date format, required
+    endDate?: string | null; // ISO date format
+    tenantId: string; // UUID
+    members?: ProjectMemberDto[] | null; // nullable
+};
+
+export type ProjectDetailsDto = {
+    id: string; // UUID
+    name?: string | null;
+    description?: string | null;
     startDate: string; // ISO date format
     endDate?: string | null; // ISO date format
     tenantId: string; // UUID
-    members: ProjectMemberDto[] | null;
-}
+    sprints?: SprintDetailsDto[] | null; // nullable
+    members?: ProjectMemberDto[] | null; // nullable
+};
 
-export type ProjectDetailsDto= {
+export type ProjectMemberDto = {
+    id: string; // UUID
+    tenantMember: TenantMember | null; // nullable
+    access: ProjectMemberAccess | null; // Access property
+};
+
+export type ProjectMemberAccess = {
+    name?: string | null; // nullable
+    id: number; // int32
+};
+
+
+
+export type BoardColumnDto = {
     id: string; // UUID
     name?: string | null;
-    description: string | null;
-    startDate: string; // ISO date format
-    endDate?: string | null; // ISO date format
-    tenantId: string; // UUID
-    sprints: SprintDetailsDto[] | null;
-    members: ProjectMemberDto[] | null;
-}
-
-export type ProjectMemberDto= {
-    id: string; // UUID
-    member: TenantMember | null;
-    access: string | null;
-}
-
-export type TaskDto ={
-    id: string; // UUID
-    title: string | null;
-    description?: string | null;
-    status: number; // Matches TaskStatus in Swagger
     order: number;
-}
+};
 
-export type BoardColumnDto ={
+export type BoardDto = {
     id: string; // UUID
-    name: string | null;
-    order: number;
-    tasks: TaskDto[] | null;
-}
+    name?: string | null;
+    columns?: BoardColumnDto[] | null; // nullable
+};
 
-export type BoardDto ={
+export type SprintDto = {
     id: string; // UUID
-    name: string | null;
-    columns: BoardColumnDto[] | null;
-}
-
-export type SprintDto ={
-    id: string; // UUID
-    name: string | null;
+    name?: string | null;
     startDate: string; // ISO date format
     endDate: string; // ISO date format
-  
-}
+};
 
-export type SprintDetailsDto ={
+export type SprintDetailsDto = {
     id: string; // UUID
-    name: string | null;
+    name?: string | null;
     startDate: string; // ISO date format
     endDate: string; // ISO date format
-    boards: BoardDto[] | null;
-}
+    boards?: BoardDto[] | null; // nullable
+};

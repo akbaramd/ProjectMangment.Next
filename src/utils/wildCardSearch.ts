@@ -22,3 +22,28 @@ export default function wildCardSearch(
     const result = list.filter((value) => searchText(value))
     return result
 }
+
+
+// Update the function to accept a generic type T that extends a Record with string keys.
+export  function wildCardSearch2<T extends Record<string, any>>(
+    list: T[],
+    input: string,
+    specifyKey?: keyof T,
+): T[] {
+    const searchText = (item: T) => {
+        for (const key in item) {
+            // Use type guards to ensure the property exists and is of type string or number
+            const value = item[specifyKey ? specifyKey : key];
+            if (value == null) {
+                continue;
+            }
+            if (
+                value.toString().toUpperCase().indexOf(input.toString().toUpperCase()) !== -1
+            ) {
+                return true;
+            }
+        }
+        return false;
+    };
+    return list.filter((value) => searchText(value));
+}

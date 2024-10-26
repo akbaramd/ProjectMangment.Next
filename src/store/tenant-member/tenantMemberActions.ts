@@ -6,24 +6,24 @@ import {
   apiRemoveTenantMember,
   apiUpdateTenantMemberRole,
 } from '@/services/TenantService';
-import { TenantMember } from '@/@types/tenant';
-import { Paginated } from '@/@types/common';
+import { PaginatedList, TenantMember } from '@/@types/tenant';
+
 import { RootState } from '../configureStore';
 
 export const fetchTenantMembers = createAsyncThunk<
-  Paginated<TenantMember>,
+  PaginatedList<TenantMember>, // Correct type
   void,
   { state: RootState; rejectValue: string }
 >('tenantMembers/fetchTenantMembers', async (_, { getState, rejectWithValue }) => {
   const state = getState().tenantMember;
   try {
-    const response = await apiGetTenantMembers(
-      state.rowsPerPage,
-      (state.currentPage - 1) * state.rowsPerPage,
-      state.searchFilter,
-      state.sortField,
-      state.sortOrder
-    );
+    const response = await apiGetTenantMembers({
+      take: state.rowsPerPage,
+      skip: (state.currentPage - 1) * state.rowsPerPage,
+      search: state.searchFilter,
+      sortBy: state.sortField,
+      sortDirection: state.sortOrder,
+    });
     return response;
   } catch (error: any) {
     const errorMessage = error.response?.data?.message || 'Failed to fetch tenant members';
@@ -31,10 +31,9 @@ export const fetchTenantMembers = createAsyncThunk<
   }
 });
 
-
 export const removeTenantMember = createAsyncThunk<
-  string,
-  string,
+  string, // Returns the memberId of the removed member
+  string, // Accepts memberId as argument
   { rejectValue: string }
 >('tenantMembers/removeTenantMember', async (memberId, { rejectWithValue }) => {
   try {

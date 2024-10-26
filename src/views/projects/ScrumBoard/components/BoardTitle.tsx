@@ -14,18 +14,22 @@ import {
 import { useForm, Controller } from 'react-hook-form'
 import type { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd'
 import type { Columns } from '../types'
+import { BoardColumnDto } from '@/@types/projects'
+import { UpdateBoardColumnDto } from '@/@types/boards'
+import { apiUpdateBoardColumn } from '@/services/BoardService'
+import { useParams } from 'react-router-dom'
 
 type BoardTitleProps = {
     dragHandleProps?: DraggableProvidedDragHandleProps | null
-    title: string
+    column: BoardColumnDto
 }
 
 type RenameFormProps = {
     title: string
     closeRenameForm: () => void
-    columns: Columns
+    columns: BoardColumnDto[]
     ordered: string[]
-    onEnter: (newColumns: Columns, newOrder: string[]) => void
+    onEnter: (newColumns:BoardColumnDto[], newOrder: string[]) => void
 }
 
 type FormSchema = {
@@ -35,38 +39,62 @@ type FormSchema = {
 const RenameForm = ({
     title,
     closeRenameForm,
-    columns = {},
+    columns = [],
     ordered,
     onEnter,
 }: RenameFormProps) => {
-    const onFormSubmit = (value: FormSchema) => {
-        const newTitle = value.title
+    const { boardId } = useParams(); // Get the board ID from the URL params
 
-        if (ordered.some((elm) => elm === newTitle)) {
-            closeRenameForm()
-            return
+    const onFormSubmit = async (value: FormSchema) => {
+        const newTitle = value.title.trim();
+
+        // Check if the new title already exists in the ordered list
+        if (ordered.includes(newTitle)) {
+            closeRenameForm();
+            return;
         }
 
-        const newColumns = {}
-        delete Object.assign(newColumns, columns, {
-            [newTitle]: columns[title],
-        })[title]
+        // Find the column to update
+        const columnToUpdate = columns.find(col => col.name === title);
+        if (!columnToUpdate || !boardId) {
+            closeRenameForm();
+            return;
+        }
 
-        const newOrder = ordered.map((elm) => {
-            if (elm === title) {
-                return newTitle
-            }
-            return elm
-        })
-        onEnter(newColumns, newOrder)
-        closeRenameForm()
-    }
+        try {
+            // Call the API to update the column name
+            const updateData: UpdateBoardColumnDto = { name: newTitle ,order: columnToUpdate.order};
+            await apiUpdateBoardColumn(boardId, columnToUpdate.id, updateData);
+
+            // Update columns locally after API success
+            const newColumns = columns.map((col) => {
+                if (col.id === columnToUpdate.id) {
+                    return {
+                        ...col,
+                        name: newTitle,
+                        order: columnToUpdate.order
+                    };
+                }
+                return col;
+            });
+
+            // Update the order array to reflect the new column name
+            const newOrder = ordered.map((elm) => (elm === title ? newTitle : elm));
+
+            // Pass the updated columns and order back through the onEnter callback
+            onEnter(newColumns, newOrder);
+        } catch (error) {
+            console.error('Error updating column:', error);
+        } finally {
+            closeRenameForm();
+        }
+    };
 
     const { control, handleSubmit } = useForm<FormSchema>({
         defaultValues: {
             title,
         },
-    })
+    });
 
     return (
         <>
@@ -81,11 +109,12 @@ const RenameForm = ({
                 />
             </Form>
         </>
-    )
-}
+    );
+};
+
 
 const BoardTitle = (props: BoardTitleProps) => {
-    const { dragHandleProps, title } = props
+    const { dragHandleProps, column } = props
 
     const {
         columns,
@@ -93,7 +122,7 @@ const BoardTitle = (props: BoardTitleProps) => {
         openDialog,
         updateColumns,
         updateDialogView,
-        setSelectedBoard,
+        setSelectedColumn,
         updateOrdered,
     } = useScrumBoardStore()
 
@@ -119,33 +148,29 @@ const BoardTitle = (props: BoardTitleProps) => {
     const onAddNewTicket = () => {
         openDialog()
         updateDialogView('NEW_TICKET')
-        setSelectedBoard(title)
+        setSelectedColumn(column)
     }
 
     const onDelete = () => {
-        const newOrder = ordered.filter((elm) => elm !== title)
-        const newColumns: Columns = {}
-        Object.assign(newColumns, columns)
-        delete newColumns[title]
-        updateOrdered(newOrder)
+ 
     }
 
-    const handleEnter = (newColumns: Columns, newOrder: string[]) => {
+    const handleEnter = (newColumns:BoardColumnDto[], newOrder: string[]) => {
         updateColumns(newColumns)
         updateOrdered(newOrder)
     }
 
     return (
         <div
-            className="board-title px-5 py-4 flex justify-between items-center"
+            className="board-title  flex justify-between items-center"
             {...dragHandleProps}
         >
             {renameActive ? (
                 <>
                     <RenameForm
-                        title={title}
+                        title={column.name || ''}
                         closeRenameForm={onRenameDeactivate}
-                        columns={columns as Columns}
+                        columns={columns }
                         ordered={ordered}
                         onEnter={handleEnter}
                     />
@@ -156,7 +181,7 @@ const BoardTitle = (props: BoardTitleProps) => {
                 </>
             ) : (
                 <>
-                    <h6>{title}</h6>
+                    <h6>{column.name}</h6>
                     <Dropdown
                         placement="bottom-end"
                         renderTitle={<EllipsisButton />}
@@ -168,7 +193,7 @@ const BoardTitle = (props: BoardTitleProps) => {
                             <span className="text-lg">
                                 <TbPencil />
                             </span>
-                            <span>Rename</span>
+                            <span>تغییر نام</span>
                         </Dropdown.Item>
                         <Dropdown.Item
                             eventKey="addTicket"
@@ -177,7 +202,7 @@ const BoardTitle = (props: BoardTitleProps) => {
                             <span className="text-lg">
                                 <TbCirclePlus />
                             </span>
-                            <span>Add Ticket</span>
+                            <span>افزودن وظیفه</span>
                         </Dropdown.Item>
                         <Dropdown.Item
                             eventKey="deleteBoard"
@@ -186,7 +211,7 @@ const BoardTitle = (props: BoardTitleProps) => {
                             <span className="text-lg">
                                 <TbTrash />
                             </span>
-                            <span>Delete Board</span>
+                            <span>حذف برد</span>
                         </Dropdown.Item>
                     </Dropdown>
                 </>

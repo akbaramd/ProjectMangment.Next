@@ -1,53 +1,50 @@
-import { Tenant } from '@/@types/tenant'
+import { Tenant } from '@/@types/tenant';
 
 export interface Invitation {
-    id: string;
+    id: string; // UUID
     phoneNumber: string;
-    tenantId: string;
+    tenantId: string; // UUID
     tenant: Tenant;
-    createdAt: string; // ISO date string
-    acceptedAt?: string; // ISO date string or null
-    expirationDate: string; // ISO date string
-    canceledAt?: string; // ISO date string or null
-    // Add other fields as necessary
-    status : InvitationStatus
+    createdAt: string; // ISO date format
+    acceptedAt?: string | null; // ISO date format, nullable
+    expirationDate: string; // ISO date format
+    canceledAt?: string | null; // ISO date format, nullable
+    status: InvitationStatus; // Enum as an object structure
 }
 
-export enum InvitationStatus {
-    Pending = 0,
-    Accepted = 1,
-    Rejected = 2,
-    Cancel = 3
+export interface InvitationStatus {
+    id: number; // Enum ID (int)
+    name: string; // Enum name (string)
 }
 
 export interface InvitationDetails {
     invitation: Invitation;
-    userExists: boolean;
-    // Add other fields as necessary
+    userExists: boolean; // Whether the user already exists in the system
+    // Add other fields as per Swagger specifications
 }
 
 export interface SendInvitationRequest {
     phoneNumber: string;
-    expirationDuration: string; // Format according to your API expectations
+    expirationDuration: string; // Expected format (e.g., "P1D" for 1 day in ISO-8601 duration)
 }
 
 export interface UpdateInvitationRequest {
-    newExpirationDuration?: string;
-    // Add other updatable fields if necessary
+    newExpirationDuration?: string | null; // Nullable if it’s an optional update
+    // Add other fields as per Swagger specifications
 }
 
 export interface PaginationParams {
-    pageNumber: number;
-    pageSize: number;
-    search?: string;
-    sortBy?: string;
-    sortOrder?: string;
+    skip: number; // Offset for pagination
+    take: number; // Number of items per page
+    search?: string | null; // Search term, nullable
+    sortBy?: string | null; // Field to sort by, nullable
+    sortOrder?: string | null; // Order of sorting (e.g., "asc" or "desc"), nullable
 }
 
 export interface PaginatedList<T> {
-    items: T[];
-    totalCount: number;
-    pageNumber: number;
-    pageSize: number;
-    totalPages: number;
+    results: T[]; // Consistent with Swagger naming
+    totalCount: number; // Total count of items
+    skip: number; // Current offset
+    take: number; // Page size
+    totalPages?: number; // Optional, as per Swagger
 }

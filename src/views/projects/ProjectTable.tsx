@@ -9,10 +9,10 @@ import { UsersAvatarGroup } from '@/components/shared';
 interface ProjectsTableProps {
     searchFilter: string | number;  // Client-side search filter
     reload: boolean;  // Trigger data reload
-    handleToggleFavorite: (projectId: string, isFavorite: boolean) => void;
+    
 }
 
-const ProjectsTable = ({ searchFilter, reload, handleToggleFavorite }: ProjectsTableProps) => {
+const ProjectsTable = ({ searchFilter, reload }: ProjectsTableProps) => {
     const [projectsList, setProjectsList] = useState<ProjectDto[]>([]);
     const [totalCount, setTotalCount] = useState(0);
     const [page, setPage] = useState(1);
@@ -61,43 +61,30 @@ const ProjectsTable = ({ searchFilter, reload, handleToggleFavorite }: ProjectsT
         <div>
             <div className="mt-8">
                 <h5 className="mb-3">Other Projects</h5>
-                <div className="flex flex-col gap-4">
+                <div className="grid grid-cols-2 gap-4"> {/* Changed grid to 6 columns */}
                     {projectsList
                         .map((project) => (
                             <Card key={project.id}>
-                                <div className="grid gap-x-4 grid-cols-12">
-                                    <div className="my-1 sm:my-0 col-span-12 sm:col-span-2 md:col-span-3 lg:col-span-3 md:flex md:items-center">
+                                <div className="flex justify-between"> {/* Updated to 6 columns */}
+                                    <div className="my-1 sm:my-0 col-span-6 sm:col-span-2 md:col-span-3 lg:col-span-3 md:flex md:items-center">
                                         <div className="flex flex-col">
                                             <h6 className="font-bold hover:text-primary">
-                                                <a href={`/concepts/projects/project-details/${project.id}`}>
+                                                <a href={`/projects/${project.id}/sprints`}>
                                                     {project.name}
                                                 </a>
                                             </h6>
                                             <span>{project.description}</span>
                                         </div>
                                     </div>
-                                    <div className="my-1 sm:my-0 col-span-12 md:col-span-3 lg:col-span-3 md:flex md:items-center">
+                                    <div className="my-1 sm:my-0 col-span-6 md:col-span-3 lg:col-span-3 md:flex md:items-center">
                                         <UsersAvatarGroup
                                             users={project.members?.map(member => ({
-                                                name: member?.member?.user.id || 'Unknown',
-                                                img: member?.member?.user.phoneNumber || '', // Assuming the member has an avatarUrl field
+                                                name: member?.tenantMember?.user?.fullName || 'Unknown',
+                                                img: member?.tenantMember?.user?.phoneNumber || '', // Assuming the member has an avatarUrl field
                                             }))}
                                         />
                                     </div>
-                                    <div className="my-1 sm:my-0 col-span-12 sm:col-span-1 flex md:items-center justify-end">
-                                        <div
-                                            className="cursor-pointer text-lg"
-                                            role="button"
-                                            onClick={() =>
-                                                handleToggleFavorite(
-                                                    project.id,
-                                                    true
-                                                )
-                                            }
-                                        >
-                                            <TbStar />
-                                        </div>
-                                    </div>
+                                    
                                 </div>
                             </Card>
                         ))}

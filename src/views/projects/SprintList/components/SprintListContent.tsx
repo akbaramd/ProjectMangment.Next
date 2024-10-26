@@ -53,7 +53,7 @@ const SprintListContent = () => {
                             <div className="my-1 sm:my-0 col-span-12 sm:col-span-3 md:col-span-3 lg:col-span-3 md:flex md:items-center">
                                 <div className="flex flex-col">
                                     <h6 className="font-bold hover:text-primary">
-                                        <Link to={`/sprints/${sprint.id}/boards`}>
+                                        <Link to={`/projects/${id}/sprints/${sprint.id}/boards`}>
                                             {sprint.name}
                                         </Link>
                                     </h6>

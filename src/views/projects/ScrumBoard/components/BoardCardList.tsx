@@ -7,9 +7,10 @@ import {
 } from '@hello-pangea/dnd'
 import type { Ticket } from '../types'
 import type { CSSProperties } from 'react'
+import { TaskDto } from '@/@types/task'
 
 export interface BaseBoardProps {
-    contents?: Ticket[]
+    contents?: TaskDto[]
     useClone?: DraggableChildrenFn
     isCombineEnabled?: boolean
 }
@@ -27,7 +28,7 @@ interface BoardCardListProps extends BaseBoardProps {
 
 type InnerListProps = {
     dropProvided: DroppableProvided
-    contents?: Ticket[]
+    contents?: TaskDto[]
 }
 
 function InnerList(props: InnerListProps) {
@@ -35,7 +36,7 @@ function InnerList(props: InnerListProps) {
 
     return (
         <div ref={dropProvided.innerRef} className="board-dropzone h-full ">
-            <div className="px-5 h-full">
+            <div className="h-full">
                 {contents?.map((item, index) => (
                     <Draggable
                         key={item.id}

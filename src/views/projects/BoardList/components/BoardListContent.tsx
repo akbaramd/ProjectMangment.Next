@@ -10,16 +10,16 @@ import { apiGetBoards } from '@/services/BoardService'
 import { Paginated } from '@/@types/common'
 
 const BoardListContent = () => {
-    const { id } = useParams<{ id: string }>() // Get project id from route params
+    const { sprintId,projectId } = useParams<{ sprintId: string, projectId: string }>() // Get project id from route params
     const [paginatedBorders, setPaginatedBorders] = useState<Paginated<BoardDto> | null>(null)
     const [loading, setLoading] = useState(true)
 
     // Fetch project details based on the id from params
     useEffect(() => {
         const fetchProjectDetails = async () => {
-            if (!id) return // If no id, do not attempt to fetch
+            if (!sprintId) return // If no id, do not attempt to fetch
             try {
-                const projectDetails = await apiGetBoards(100,0,'',id)
+                const projectDetails = await apiGetBoards(100,0,'',sprintId)
                 setPaginatedBorders(projectDetails)
             } catch (error) {
                 console.error('Failed to fetch project details:', error)
@@ -29,7 +29,7 @@ const BoardListContent = () => {
         }
 
         fetchProjectDetails()
-    }, [id])
+    }, [sprintId])
 
     if (loading) {
         return (
@@ -53,7 +53,7 @@ const BoardListContent = () => {
                             <div className="my-1 sm:my-0 col-span-12 sm:col-span-3 md:col-span-3 lg:col-span-3 md:flex md:items-center">
                                 <div className="flex flex-col">
                                     <h6 className="font-bold hover:text-primary">
-                                        <Link to={`/boards/${sprint.id}`}>
+                                        <Link to={`/projects/${projectId}/sprints/${sprintId}/boards/${sprint.id}`}>
                                             {sprint.name}
                                         </Link>
                                     </h6>

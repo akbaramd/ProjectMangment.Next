@@ -4,12 +4,12 @@ import {
     ProjectDetailsDto, 
     ProjectDto, 
     SprintDto, 
-    TaskDto, 
     UpdateProjectDto 
 } from '@/@types/projects';
 import ApiService from './ApiService';
 import endpointConfig from '@/configs/endpoint.config';
 import { Paginated } from '@/@types/common';
+import { TaskDto } from '@/@types/task';
 
 
 // Sprints Endpoints
@@ -23,6 +23,7 @@ export async function apiGetSprints(projectId: string, take: number, skip: numbe
             take,
             skip,
             search,
+            projectId
         },
     });
 }

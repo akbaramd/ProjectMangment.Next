@@ -1,38 +1,44 @@
-import { RoleWithPermissionsDto, UserDto } from '@/@types/auth'
+import { RoleWithPermissionsDto, UserDto } from '@/@types/auth';
 
 export interface Tenant {
-    id: string;
-    name: string;
-    subdomain: string;
-    status: number; // Assuming it's an enum or status code
-    members?: TenantMember[];
+    id: string; // UUID
+    name?: string | null; // Nullable as per Swagger
+    subdomain?: string | null; // Nullable as per Swagger
+    status: TenantStatus; // TenantStatus enum object structure
+    members?: TenantMember[] | null; // Nullable array
 }
 
 export interface TenantMember {
-    id:string
-    userId: string;
-    user: UserDto;
-    roles	: RoleWithPermissionsDto[];
-    memberStatus	: TenantMemberStatus;
+    userId: string; // UUID
+    user?: UserDto | null; // Nullable reference
+    roles?: RoleWithPermissionsDto[] | null; // Nullable array
+    status: TenantMemberStatus; // Enum object structure
 }
 
-
 export interface PaginatedList<T> {
-    items: T[];
-    totalCount: number;
-    pageSize: number;
-    currentPage: number;
+    results: T[]; // Consistent with Swagger naming
+    skip: number; // Skipped items for pagination
+    take: number; // Items per page
+    page: number; // Current page
+    totalCount: number; // Total count of items
+    totalPages?: number; // Optional total pages, marked as read-only in Swagger
 }
 
 export interface PaginationParams {
-    pageNumber: number;
-    pageSize: number;
-    search?: string;
+    skip: number; // Skip count for pagination
+    take: number; // Page size
+    search?: string; // Search term, nullable
+    sortDirection?: string; // Optional sort direction
+    sortBy?: string; // Optional field to sort by
 }
 
+// Enum structures as objects with id and name properties
+export interface TenantMemberStatus {
+    id: number; // Enum ID as an integer
+    name: string; // Enum name as a string
+}
 
-export enum TenantMemberStatus {
-    Active = 0,
-    Inactive = 1,
-    Banned = 2
+export interface TenantStatus {
+    id: number; // Enum ID as an integer
+    name: string; // Enum name as a string
 }

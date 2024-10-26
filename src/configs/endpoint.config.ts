@@ -9,9 +9,9 @@ const endpointConfig = {
     refreshToken: '/auth/refresh-token',
 
     // Invitations endpoints
-    getInvitations: `/invitations`,
+    getInvitations: '/invitations',
     getInvitationDetails: (invitationId: string) => `/invitations/${invitationId}`,
-    sendInvitation: `/invitations`,
+    sendInvitation: '/invitations',
     acceptInvitation: (invitationId: string) => `/invitations/${invitationId}/accept`,
     rejectInvitation: (invitationId: string) => `/invitations/${invitationId}/reject`,
     cancelInvitation: (invitationId: string) => `/invitations/${invitationId}/cancel`,
@@ -19,41 +19,58 @@ const endpointConfig = {
     updateInvitation: (invitationId: string) => `/invitations/${invitationId}`,
 
     // Tenant endpoints
-    getTenantInfo: `/tenants`, // Fetch tenant info
-    getTenantMembers: `/tenants/members`, // Fetch all members of a tenant
-    removeTenantMember: (memberId: string) => `/tenants/members/${memberId}`, // Remove tenant member
-    updateTenantMemberRole: (memberId: string) => `/tenants/members/${memberId}/role`, // Update tenant member's role
+    getTenantInfo: '/tenants',
+    getTenantMembers: '/tenants/members',
+    removeTenantMember: (memberId: string) => `/tenants/members/${memberId}`,
+    updateTenantMemberRole: (memberId: string) => `/tenants/members/${memberId}/role`,
 
     // Role and Permission endpoints
-    getRoles: '/tenant-roles', // Fetch all roles for a tenant
-    createRole: '/tenant-roles', // Create a new role
-    updateRole: (roleId: string) => `/tenant-roles/${roleId}`, // Update a role
-    deleteRole: (roleId: string) => `/tenant-roles/${roleId}`, // Delete a role
-    getPermissions: '/tenant-roles/permissions', // Fetch all permission groups
-   
+    getRoles: '/tenant-roles',
+    createRole: '/tenant-roles',
+    updateRole: (roleId: string) => `/tenant-roles/${roleId}`,
+    deleteRole: (roleId: string) => `/tenant-roles/${roleId}`,
+    getPermissions: '/tenant-roles/permissions',
 
+    // Project endpoints
     getProjects: '/projects',
     createProject: '/projects',
     getProjectDetails: (projectId: string) => `/projects/${projectId}`,
     updateProject: (projectId: string) => `/projects/${projectId}`,
     deleteProject: (projectId: string) => `/projects/${projectId}`,
-    
-    getSprints:  `/sprints`,
+
+    // Sprint endpoints
+    getSprints: '/sprints',
     getSprintDetails: (sprintId: string) => `/sprints/${sprintId}`,
     createSprint: '/sprints',
     updateSprint: (sprintId: string) => `/sprints/${sprintId}`,
     deleteSprint: (sprintId: string) => `/sprints/${sprintId}`,
 
-
+    // Board endpoints
     getBoards: '/boards',
     getBoardDetails: (boardId: string) => `/boards/${boardId}`,
-    createBoard: '/api/boards',
+    createBoard: '/boards',
     updateBoard: (boardId: string) => `/boards/${boardId}`,
+    updateBoardColumn: (boardId: string, columnId: string) => `/boards/${boardId}/columns/${columnId}`,
     deleteBoard: (boardId: string) => `/boards/${boardId}`,
-
     getBoardsBySprintId: (sprintId: string) => `/boards?sprintId=${sprintId}`,
     getTasksByBoardId: (boardId: string) => `/boards/${boardId}/tasks`,
     getBoardDetailsById: (boardId: string) => `/boards/${boardId}`,
-}
+
+    // Task endpoints
+    getTasksBySprintId: (sprintId: string) => `/tasks/sprints/${sprintId}`,
+    getTaskDetails: (taskId: string) => `/tasks/${taskId}`,
+    createTask: '/tasks',
+    updateTask: (taskId: string) => `/tasks/${taskId}`,
+    deleteTask: (taskId: string) => `/tasks/${taskId}`,
+
+    // Task Comment endpoints
+    addTaskComment: (taskId: string) => `/tasks/${taskId}/comments`,
+    updateTaskComment: (taskId: string, commentId: string) => `/tasks/${taskId}/comments/${commentId}`,
+    deleteTaskComment: (taskId: string, commentId: string) => `/tasks/${taskId}/comments/${commentId}`,
+
+    // Task Member Assignment endpoints
+    assignTaskMember: (taskId: string, memberId: string) => `/tasks/${taskId}/members/${memberId}/assign`,
+    unassignTaskMember: (taskId: string, memberId: string) => `/tasks/${taskId}/members/${memberId}/unassign`,
+};
 
 export default endpointConfig;

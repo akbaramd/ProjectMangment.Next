@@ -13,7 +13,7 @@ const Home = () => {
             <h4 className="mb-1">{tenant?.name}</h4>
             <p>subdomain : {tenant?.subdomain}</p>
             <p>members : {tenant?.members?.length}</p>
-            <p>status : {TenantMemberStatus[tenant?.status??TenantMemberStatus.Inactive]}</p>
+            <p>status : {tenant?.status.name}</p>
         </div>
     </Card>
 }
