@@ -4,8 +4,10 @@ import Button from '@/components/ui/Button';
 import Notification from '@/components/ui/Notification';
 import toast from '@/components/ui/toast';
 import { Dialog } from '@/components/ui';
-import { CreateProjectDto } from '@/@types/projects'; 
-import { apiAddProject } from '@/services/ProjectService';
+import { CreateProjectDto } from '@/@types/projects';
+import { useAppDispatch, useAppSelector } from '@/store/configureStore';
+import { addProject } from '@/store/project/projectActions';
+import { selectProjectsLoading } from '@/store/project/projectSelectors';
 
 interface AddProjectDialogProps {
     isOpen: boolean;
@@ -20,10 +22,11 @@ const AddProjectDialog: React.FC<AddProjectDialogProps> = ({
     onSuccess,
     onError,
 }) => {
+    const dispatch = useAppDispatch();
+    const isAdding = useAppSelector(selectProjectsLoading); // Use Redux loading state
     const [projectName, setProjectName] = useState<string>('');
     const [description, setDescription] = useState<string>('');
     const [startDate, setStartDate] = useState<string>(new Date().toISOString().split('T')[0]); // Set default to today
-    const [isAdding, setIsAdding] = useState(false);
 
     const handleAddProject = async () => {
         if (!projectName) {
@@ -31,25 +34,26 @@ const AddProjectDialog: React.FC<AddProjectDialogProps> = ({
             return;
         }
 
-        setIsAdding(true);
         const projectData: CreateProjectDto = { name: projectName, description, startDate };
 
         try {
-            await apiAddProject(projectData);
-            toast.push(
-                <Notification title="Success" type="success">
-                    Project added successfully.
-                </Notification>
-            );
-            onSuccess();
-            setProjectName('');
-            setDescription('');
-            setStartDate(new Date().toISOString().split('T')[0]); // Reset to today
-            onClose();
+            const resultAction = await dispatch(addProject(projectData));
+            if (addProject.fulfilled.match(resultAction)) {
+                toast.push(
+                    <Notification title="Success" type="success">
+                        Project added successfully.
+                    </Notification>
+                );
+                onSuccess();
+                setProjectName('');
+                setDescription('');
+                setStartDate(new Date().toISOString().split('T')[0]); // Reset to today
+                onClose();
+            } else {
+                onError(resultAction.payload || 'Error adding project.');
+            }
         } catch (error) {
-            onError('Error adding project.');
-        } finally {
-            setIsAdding(false);
+            onError('An error occurred while adding the project.');
         }
     };
 

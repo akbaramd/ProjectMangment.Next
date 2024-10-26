@@ -1,122 +1,130 @@
-import { useState, useEffect, lazy, Suspense } from 'react'
-import Spinner from '@/components/ui/Spinner'
-import ProjectDetailsNavigation from './components/ProjectDetailsNavigation'
-import useResponsive from '@/utils/hooks/useResponsive'
-import { useParams } from 'react-router-dom'
-import { apiGetProjectDetails } from '@/services/ProjectService'
-import { ProjectDetailsDto } from '@/@types/projects'
-import ProjectDetailsSetting from './components/ProjectDetailsSetting'
-import ProjectDetailsHeader from './components/ProjectDetailsHeader'
-import { Card } from '@/components/ui'
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/store/configureStore'; // Redux hooks
+import Spinner from '@/components/ui/Spinner';
+import Tabs from '@/components/ui/Tabs'; // Tabs component
+import { HiOutlineCog, HiOutlineEye } from 'react-icons/hi'; // Icons for the tabs
+import ProjectDetailsSetting from './components/ProjectDetailsSetting';
+import ProjectDetailsHeader from './components/ProjectDetailsHeader';
+import { Card } from '@/components/ui';
+import Notification from '@/components/ui/Notification';
+import toast from '@/components/ui/toast';
+import { fetchProjectDetails, updateProject } from '@/store/project/projectActions';
+import { selectProjectDetails } from '@/store/project/projectSelectors';
+import { selectError, selectIsLoading } from '@/store/invitation/invitationSelectors';
 
-const defatultNavValue = 'settings'
-const settingsNavValue = 'settings'
-
+const { TabNav, TabList, TabContent } = Tabs;
 
 const ProjectDetails = () => {
-    const { id } = useParams()
-    const [data, setData] = useState<ProjectDetailsDto | null>(null)
-    const [loading, setLoading] = useState(true)
-    const { larger } = useResponsive()
-
-    const [selectedNav, setSelectedNav] = useState(defatultNavValue)
-    const [isContentEdit, setIsContentEdit] = useState(false)
+    const { id } = useParams<{ id: string }>(); // Project ID from URL params
+    const dispatch = useAppDispatch();
+    
+    // Redux states
+    const projectDetails = useAppSelector(selectProjectDetails);
+    const isLoading = useAppSelector(selectIsLoading);
+    const error = useAppSelector(selectError);
+    
+    const [selectedNav, setSelectedNav] = useState('settings');
+    const [isContentEdit, setIsContentEdit] = useState(false);
 
     useEffect(() => {
-        const fetchProjectDetails = async () => {
-            try {
-                const projectDetails = await apiGetProjectDetails(id ?? '')
-                console.log(projectDetails)
-                setData(projectDetails)
-            } catch (error) {
-                console.error('Failed to fetch project details:', error)
-            } finally {
-                setLoading(false)
-            }
+        if (id) {
+            dispatch(fetchProjectDetails(id));
         }
-
-        fetchProjectDetails()
-    }, [id])
+    }, [id, dispatch]);
 
     const handleEdit = (isEdit: boolean) => {
-        setSelectedNav(settingsNavValue)
-        setIsContentEdit(isEdit)
-    }
-
-    const handleContentChange = (content: string) => {
-        if (data) {
-            setData({ ...data })
-        }
-        setIsContentEdit(false)
-    }
+        setSelectedNav('settings');
+        setIsContentEdit(isEdit);
+    };
 
     const handleUpdate = ({
         name,
         description,
         startDate,
     }: {
-        name: string
-        description: string
-        startDate: string
+        name: string;
+        description: string;
+        startDate: string;
     }) => {
-        if (data) {
-            const updatedData = { ...data, name, description, schedule: { ...data, startDate } }
-            setData(updatedData)
-            setIsContentEdit(false)
-            setSelectedNav(defatultNavValue)
+        if (projectDetails) {
+            dispatch(updateProject({ projectId: projectDetails.id, data: { name, description } }));
         }
-    }
+        setIsContentEdit(false);
+        setSelectedNav('settings');
+        toast.push(
+            <Notification title="Success" type="success">
+                Project details updated successfully.
+            </Notification>
+        );
+    };
 
-    const handleNavigationChange = (val: string) => {
-        setIsContentEdit(val === settingsNavValue)
-        setSelectedNav(val)
-    }
-
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="my-4 mx-auto text-center flex justify-center">
                 <Spinner size={40} />
             </div>
-        )
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="my-4 mx-auto text-center flex justify-center">
+                <Notification title="Error" type="danger">
+                    {error}
+                </Notification>
+            </div>
+        );
     }
 
     return (
-        <Card >
-            
-            {data && (
+        <Card>
+            {projectDetails && (
                 <>
-                    <ProjectDetailsHeader title={data.project.name ?? ''} isContentEdit={isContentEdit} onEdit={handleEdit} selected={selectedNav} onChange={handleNavigationChange} />
-                   
-                    <div className="mt-6 flex gap-12">
-                        {larger.xl && (
-                            <ProjectDetailsNavigation
-                                selected={selectedNav}
-                                onChange={handleNavigationChange}
-                            />
-                        )}
-                        <div className="w-full">
-                            <Suspense
-                                fallback={
-                                    <div className="my-4 mx-auto text-center flex justify-center">
-                                        <Spinner size={40} />
-                                    </div>
-                                }
-                            >
-                               
-                                {selectedNav === 'settings' &&  <ProjectDetailsSetting
-                                        name={data.project.name ?? ''}
-                                        description={data.project.description ?? ''}
-                                        startDate={data.project.startDate ?? ''}
-                                        onUpdate={handleUpdate}
-                                    />}
-                           
-                            </Suspense>
+                    <ProjectDetailsHeader
+                        title={projectDetails.name ?? ''}
+                        isContentEdit={isContentEdit}
+                        onEdit={handleEdit}
+                        selected={selectedNav}
+                        onChange={(val) => setSelectedNav(val)}
+                    />
+
+                    {/* Tabs Section */}
+                    <Tabs defaultValue="settings">
+                        <TabList>
+                            <TabNav value="settings" icon={<HiOutlineCog />}>
+                                Settings
+                            </TabNav>
+                            <TabNav value="overview" icon={<HiOutlineEye />}>
+                                Overview
+                            </TabNav>
+                        </TabList>
+
+                        <div className="p-4">
+                            <TabContent value="settings">
+                                {/* Settings Content */}
+                                <ProjectDetailsSetting
+                                    name={projectDetails.name ?? ''}
+                                    description={projectDetails.description ?? ''}
+                                    startDate={projectDetails.startDate ?? ''}
+                                    onUpdate={handleUpdate}
+                                />
+                            </TabContent>
+
+                            <TabContent value="overview">
+                                {/* Overview Content */}
+                                <div>
+                                    <p>
+                                        Overview of the project will go here. You can display the project status, progress, and key metrics.
+                                    </p>
+                                </div>
+                            </TabContent>
                         </div>
-                    </div>
+                    </Tabs>
                 </>
             )}
-        </Card  >
-    )
-}
+        </Card>
+    );
+};
 
-export default ProjectDetails
+export default ProjectDetails;

@@ -140,18 +140,7 @@ const ProjectDetailsHeader = (props: ProjectDetailsHeaderProps) => {
                     )}
                     <h3>{title}</h3>
                 </div>
-                <div className="flex items-center gap-2">
-        
-                    <Button
-                        disabled={isContentEdit}
-                        variant="solid"
-                        onClick={() => onEdit(!isContentEdit)}
-                    >
-                        {isContentEdit ? 'Editing' : 'Edit'}
-                    </Button>
-                </div>
             </div>
-          
         </>
     )
 }
