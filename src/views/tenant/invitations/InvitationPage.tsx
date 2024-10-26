@@ -92,16 +92,8 @@ const InvitationsPage = () => {
       cell: ({ row }) => {
         const { status } = row.original;
 
-        const statusMap = {
-          [InvitationStatus.Pending]: { label: 'در انتظار', color: 'bg-yellow-100' },
-          [InvitationStatus.Accepted]: { label: 'پذیرفته شده', color: 'bg-green-100' },
-          [InvitationStatus.Rejected]: { label: 'رد شده', color: 'bg-red-100' },
-          [InvitationStatus.Cancel]: { label: 'لغو شده', color: 'bg-blue-100' },
-        };
 
-        const { label, color } = statusMap[status] || { label: 'نامشخص', color: 'bg-gray-100' };
-
-        return <span className={`px-2 py-1 rounded ${color}`}>{label}</span>;
+        return <span className={`px-2 py-1 rounded`}>{status.name}</span>;
       },
     },
     {
@@ -110,7 +102,7 @@ const InvitationsPage = () => {
       enableSorting: false,
       cell: ({ row }) => {
         const { id, status } = row.original;
-        if (status === InvitationStatus.Pending) {
+        if (status.name === "") {
           return (
             <div className="flex gap-2">
               <Button

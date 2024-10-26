@@ -84,7 +84,7 @@ const ProjectsPage = () => {
             </div>
 
             <ProjectsTable
-                columns={projectColumns}
+    
                 searchFilter={searchFilter}
                 reload={reload}
             />
